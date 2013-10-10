@@ -11,13 +11,21 @@
 
 //! atom_tの内部で用いるLabel
 typedef enum {
-  NUM
+  INT,
+  DOUBLE
 } atom_label_t;
 
 //! atomを表す構造体.
 typedef struct {
   atom_label_t label;
   union {
+    int intData;
     double doubleData;
   };
 } atom_t;
+
+//! listを表す構造体.
+typedef struct {
+  atom_t car;
+  list_t* cdr;
+} list_t;
