@@ -19,6 +19,7 @@ typedef enum {
   POINTER_OF_LIST,
   SYSTEM_FUNCTION,
   STRING,
+  CHAR,
   BOOL,
   ERROR
 } atom_label_t;
@@ -27,6 +28,7 @@ typedef enum {
 typedef struct {
   atom_label_t label;
   /* union { */
+    char charData;
     int intData;
     double doubleData;
     void* systemFunction;

@@ -13,6 +13,28 @@ atom_t parseAtom(void)
   abort();
 }
 
+atom_t parseString(void)
+{
+  char ch;
+  int t = 0;
+  char * str;
+  size_t strSize = mallocByte;
+  atom_t ret;
+  str = mallocWithErr( strSize );
+  while ( ( ch = getchar () ) != -1 && ch != '"')
+    {
+      str[t] = ch;
+      t++;
+    } 
+  str[t] = '\0';
+
+  ret.label = STRING;
+  ret.stringData = str;
+
+  return ret;
+}
+
+
 atom_t parseAtomWithFirstChar(char ch)
 {
   int t = 0;

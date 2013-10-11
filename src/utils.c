@@ -52,8 +52,17 @@ void displayAtom(atom_t in)
     case SYSTEM_FUNCTION:
       printf("This is system function\n");
       break;
+    case STRING:
+      printf("\"%s\"\n",in.stringData);
+      break;
     case ERROR:
       printf("%s",in.stringData);
+      break;
+    case BOOL:
+      puts( in.boolData ? "true" : "false");
+      break;
+    case CHAR:
+      printf("#\\%c\n",in.charData);
       break;
     default:
       fprintf(stderr,"unknown type of atom!!\n");

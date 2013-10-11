@@ -18,3 +18,4 @@
 //! atomをparseする
 atom_t parseAtom(void);
 atom_t parseAtomWithFirstChar(char ch);
+atom_t parseString(void);
