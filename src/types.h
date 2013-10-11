@@ -21,7 +21,8 @@ typedef enum {
   STRING,
   CHAR,
   BOOL,
-  ERROR
+  ERROR,
+  UNDEFINED_VARIABLE
 } atom_label_t;
 
 //! atomを表す構造体.
@@ -43,3 +44,4 @@ typedef struct _list_t {
   atom_t car;
   atom_t cdr;
 } list_t;
+

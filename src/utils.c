@@ -64,6 +64,9 @@ void displayAtom(atom_t in)
     case CHAR:
       printf("#\\%c\n",in.charData);
       break;
+    case UNDEFINED_VARIABLE:
+      printf("error: undefined variable %s\n",in.stringData);
+      break;
     default:
       fprintf(stderr,"unknown type of atom!!\n");
       exit(-1);

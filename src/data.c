@@ -32,7 +32,7 @@ atom_t getData(char* label)
 	    }
 	}
     }
-  return mkErrorMes("error: undefined variable\n");
+  return (atom_t){.label=UNDEFINED_VARIABLE,.stringData=label};
 }
 
 //! dataを格納する.とりあえず破壊的代入もできるようにする

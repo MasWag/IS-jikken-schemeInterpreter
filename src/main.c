@@ -26,6 +26,14 @@ int main ()
 	}
       else if ( ch == '(' )
 	{
+	  list_t list;
+	  while ( ( ch = getchar () ) != -1 && (ch == ' ' || ch == '\n' )) ;
+
+	  // ここインチキしている
+	  if ( ch != ')' )
+	    {
+	      list.car = parseAtomWithFirstChar(ch);
+	    }
 	  fprintf(stderr,"not defined yet\n");
 	  abort();
 	}
