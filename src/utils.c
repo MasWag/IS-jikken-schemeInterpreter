@@ -49,9 +49,27 @@ void displayAtom(atom_t in)
     case DOUBLE:
       printf("%f\n",in.doubleData);
       break;
+    case SYSTEM_FUNCTION:
+      printf("This is system function\n");
+      break;
+    case ERROR:
+      printf("%s",in.stringData);
+      break;
     default:
       fprintf(stderr,"unknown type of atom!!\n");
       exit(-1);
     }
 }
 
+atom_t _define(atom_t label,atom_t data)
+{
+  if(label.label != STRING) 
+    { 
+      printf("error: ");
+      displayAtom(label);
+      puts(" is not string");
+      return (atom_t){.label=BOOL,.boolData=false};
+    }
+  setData(label.stringData,data);
+  return data;
+}

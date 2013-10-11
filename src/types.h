@@ -8,24 +8,36 @@
 
 #pragma once
 
+#include <stdbool.h>
+
+struct _list_t;
 
 //! atom_tの内部で用いるLabel
 typedef enum {
   INT,
-  DOUBLE
+  DOUBLE,
+  POINTER_OF_LIST,
+  SYSTEM_FUNCTION,
+  STRING,
+  BOOL,
+  ERROR
 } atom_label_t;
 
 //! atomを表す構造体.
 typedef struct {
   atom_label_t label;
-  union {
+  /* union { */
     int intData;
     double doubleData;
-  };
+    void* systemFunction;
+    char* stringData;
+    bool boolData;
+    struct _list_t* pointerData;
+  /* }; */
 } atom_t;
 
 //! listを表す構造体.
-typedef struct {
+typedef struct _list_t {
   atom_t car;
-  list_t* cdr;
+  atom_t cdr;
 } list_t;

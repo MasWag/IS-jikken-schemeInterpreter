@@ -10,6 +10,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include "data.h"
 #include "types.h"
 
 //! error処理をやってくれるmalloc
@@ -23,3 +24,17 @@ void displayAtom(atom_t in);
 
 //! listのdisplay関数
 void displayList(list_t in);
+
+//! define関数
+atom_t _define(atom_t,atom_t);
+
+//! listのcar
+#define car(l) (l.car)
+
+//! listのcdr
+#define cdr(l) (l.cdr)
+
+//! cons
+#define cons( a , b ) ( (list_t){.car = a,.cdr = b})
+
+#define mkErrorMes(a) ( (atom_t){.label=ERROR,.stringData=a} )

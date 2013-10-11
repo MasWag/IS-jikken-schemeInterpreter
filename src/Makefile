@@ -2,11 +2,15 @@ CC = gcc
 SRCS = $(wildcard *.c)
 OBJS = $(SRCS:.c=.o)
 
+CFLAGS = -std=gnu99 -Wall
+
 scheme: $(OBJS)
-	$(CC) $(OBJS) -o $@
+	$(CC) $(OBJS) $(CFLAGS) -o $@
 
 %.o : %.c
-	$(CC) -c $< -o $@
+	$(CC) $(CFLAGS) -c $< -o $@
 
 check-syntax:
-	$(CC) -o nul -S ${CHK_SOURCES}
+	$(CC) $(CFLAGS) -o nul -S ${CHK_SOURCES}
+clean:
+	rm -f *.o scheme
