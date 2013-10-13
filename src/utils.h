@@ -27,7 +27,7 @@ void displayAtomWithoutLF(atom_t in);
 void displayList(list_t in);
 
 //! define関数
-atom_t _define(atom_t,atom_t);
+atom_t _define(list_t);
 
 //! execute関数
 atom_t _execute(atom_t,list_t);

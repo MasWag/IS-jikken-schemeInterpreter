@@ -11,6 +11,6 @@
 
 void init(void)
 {
-  
+    setData("a",(atom_t){.label=INT,.intData=3});
 
 }

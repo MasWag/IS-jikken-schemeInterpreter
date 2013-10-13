@@ -10,8 +10,12 @@
 #include "parse.h"
 #include "utils.h"
 
+extern void init(void);
+
 int main ()
 {
+
+  init();
 
   int ch;
   
@@ -29,9 +33,9 @@ int main ()
 	  if ( atom.label != POINTER_OF_LIST ) 
 	      displayAtom(atom);
 	  else {
-	      displayList( *(atom.pointerData) );
+	      /* displayList( *(atom.pointerData) ); */
 	      if ( atom.pointerData->cdr.pointerData != NULL )
-	      _execute(atom.pointerData->car,*(atom.pointerData->cdr.pointerData));
+		  displayAtom(_execute(atom.pointerData->car,*(atom.pointerData->cdr.pointerData)));
 	  }
 	 
       }

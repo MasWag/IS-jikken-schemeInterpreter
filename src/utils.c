@@ -105,17 +105,19 @@ void displayList(list_t list)
 }
 
 
-atom_t _define(atom_t label,atom_t data)
+atom_t _define(list_t args)
 {
-  if(label.label != STRING) 
+  if ( args.cdr.pointerData == NULL || args.cdr.pointerData->cdr.pointerData != NULL ) 
+      return (atom_t){.label=ERROR,.stringData="ERROR: Syntax error: define : label -> atom -> atom"};
+  if(args.car.label != UNDEFINED_VARIABLE ) 
     { 
       printf("error: ");
-      displayAtom(label);
+      displayAtom(args.car);
       puts(" is not string");
       return (atom_t){.label=BOOL,.boolData=false};
     }
-  setData(label.stringData,data);
-  return data;
+  setData(args.car.stringData,args.cdr.pointerData->car);
+  return args.cdr.pointerData->car;
 }
 
 atom_t _execute(atom_t functionAtom,list_t args)
@@ -123,14 +125,15 @@ atom_t _execute(atom_t functionAtom,list_t args)
     if ( functionAtom.label == ERROR )
 	return functionAtom;
     if ( functionAtom.label == POINTER_OF_LIST )
-	functionAtom = _execute(functionAtom.pointerData->car,*(functionAtom.pointerData->cdr.pointerData));
-    
+	functionAtom = _execute(functionAtom.pointerData->car,*(functionAtom.pointerData->cdr.pointerData));    
     else if( functionAtom.label != SYSTEM_FUNCTION ) {
 	printf("error: ");
 	displayAtomWithoutLF(functionAtom);
 	puts(" is not function");
 	return (atom_t){.label=ERROR,};
     }
-    
+    else if(functionAtom.label == SYSTEM_FUNCTION ){
+	return functionAtom.systemFunction(args);
+    }
 }
 

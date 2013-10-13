@@ -28,7 +28,7 @@ atom_t getData(char* label)
 	{
 	  if ( strcmp(ptr->cdr->car.label,label) == 0)
 	    {
-	      return ptr->cdr->cdr->car.data;
+	      return ptr->cdr->car.data;
 	    }
 	}
     }

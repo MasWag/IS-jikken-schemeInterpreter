@@ -184,16 +184,17 @@ atom_t parseOtherAtomWithFirseChar(char ch)
     {
       ret.label = INT;
       ret.intData = atoi(str);
+      free (str);
     } 
   else if ( isDouble )
     {
       ret.label = DOUBLE;
       ret.doubleData = atof(str);
+      free (str);
     }
   else
     ret =  getData (str);
-  
-  free (str);
+
 
   return ret;
 }

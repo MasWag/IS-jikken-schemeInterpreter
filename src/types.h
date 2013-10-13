@@ -12,6 +12,9 @@
 
 struct _list_t;
 
+typedef struct {
+} system_function_t;
+
 //! atom_tの内部で用いるLabel
 typedef enum {
   INT,
@@ -27,13 +30,13 @@ typedef enum {
 } atom_label_t;
 
 //! atomを表す構造体.
-typedef struct {
+typedef struct _atom_t {
   atom_label_t label;
   /* union { */
     char charData;
     int intData;
     double doubleData;
-    void* systemFunction;
+    struct _atom_t (*systemFunction)(list_t);
     char* stringData;
     bool boolData;
     struct _list_t* pointerData;
@@ -45,4 +48,3 @@ typedef struct _list_t {
   atom_t car;
   atom_t cdr;
 } list_t;
-

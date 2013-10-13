@@ -6,7 +6,8 @@
   @brief Schemeのデータを保持する
 */
 
-#pragma once
+#ifndef INCLUDED_DATA_H
+#define INCLUDED_DATA_H
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -31,3 +32,5 @@ typedef struct _dataList_t
   data_t car;
   struct _dataList_t * cdr;
 } dataList_t;
+
+#endif
