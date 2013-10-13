@@ -39,39 +39,71 @@ void * reallocWithErr(void* ptr,size_t size)
 }
 
 //! atomのdisplay関数
-void displayAtom(atom_t in)
+void displayAtomWithoutLF(atom_t in)
 {
-  switch ( in.label )
+    
+ switch ( in.label )
     {
     case INT:
-      printf("%d\n",in.intData);
+      printf("%d",in.intData);
       break;
     case DOUBLE:
-      printf("%f\n",in.doubleData);
+      printf("%f",in.doubleData);
       break;
     case SYSTEM_FUNCTION:
-      printf("This is system function\n");
+      printf("This is system function");
       break;
     case STRING:
-      printf("\"%s\"\n",in.stringData);
+      printf("\"%s\"",in.stringData);
       break;
     case ERROR:
       printf("%s",in.stringData);
       break;
     case BOOL:
-      puts( in.boolData ? "true" : "false");
+      printf( in.boolData ? "#t" : "#f");
       break;
     case CHAR:
-      printf("#\\%c\n",in.charData);
+      printf("#\\%c",in.charData);
       break;
-    case UNDEFINED_VARIABLE:
-      printf("error: undefined variable %s\n",in.stringData);
+     case UNDEFINED_VARIABLE:
+      printf("error: undefined variable %s ",in.stringData);
       break;
     default:
-      fprintf(stderr,"unknown type of atom!!\n");
-      exit(-1);
+	if(in.pointerData == NULL) {
+	    printf("()");
+	    return;      
+	}
+      fprintf(stderr,"unknown type of atom!!");
+      printf("%d\n",in.label);
+      return;
+      /* exit(-1); */
     }
 }
+
+void displayListWithoutBraces(list_t list)
+{
+    putchar(' ');
+    if ( list.car.label != POINTER_OF_LIST ) 
+	displayAtomWithoutLF(list.car);
+    else
+	displayList(*(list.car.pointerData));   
+    if ( list.cdr.pointerData == NULL )
+	return;    
+    if ( list.cdr.label != POINTER_OF_LIST ) {
+	displayAtomWithoutLF(list.cdr);
+    }
+    else
+	displayListWithoutBraces(*(list.cdr.pointerData));
+}
+
+void displayList(list_t list)
+{
+    putchar('(');
+    displayListWithoutBraces(list);
+    putchar(' ');    
+    putchar(')');
+}
+
 
 atom_t _define(atom_t label,atom_t data)
 {
@@ -85,3 +117,20 @@ atom_t _define(atom_t label,atom_t data)
   setData(label.stringData,data);
   return data;
 }
+
+atom_t _execute(atom_t functionAtom,list_t args)
+{
+    if ( functionAtom.label == ERROR )
+	return functionAtom;
+    if ( functionAtom.label == POINTER_OF_LIST )
+	functionAtom = _execute(functionAtom.pointerData->car,*(functionAtom.pointerData->cdr.pointerData));
+    
+    else if( functionAtom.label != SYSTEM_FUNCTION ) {
+	printf("error: ");
+	displayAtomWithoutLF(functionAtom);
+	puts(" is not function");
+	return (atom_t){.label=ERROR,};
+    }
+    
+}
+

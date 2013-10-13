@@ -20,13 +20,17 @@ void * mallocWithErr(size_t size);
 void * reallocWithErr(void* ptr,size_t size);
 
 //! atomのdisplay関数
-void displayAtom(atom_t in);
+void displayAtomWithoutLF(atom_t in);
+#define displayAtom(a) ( displayAtomWithoutLF(a),putchar('\n') )
 
 //! listのdisplay関数
 void displayList(list_t in);
 
 //! define関数
 atom_t _define(atom_t,atom_t);
+
+//! execute関数
+atom_t _execute(atom_t,list_t);
 
 //! listのcar
 #define car(l) (l.car)

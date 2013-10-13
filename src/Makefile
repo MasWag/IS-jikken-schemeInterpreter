@@ -2,7 +2,7 @@ CC = gcc
 SRCS = $(wildcard *.c)
 OBJS = $(SRCS:.c=.o)
 
-CFLAGS = -std=gnu99 -Wall
+CFLAGS = -std=gnu99 -Wall -g
 
 scheme: $(OBJS)
 	$(CC) $(OBJS) $(CFLAGS) -o $@
@@ -13,4 +13,4 @@ scheme: $(OBJS)
 check-syntax:
 	$(CC) $(CFLAGS) -o nul -S ${CHK_SOURCES}
 clean:
-	rm -f *.o scheme
+	rm -f *.o *flymake* scheme

@@ -22,7 +22,8 @@ typedef enum {
   CHAR,
   BOOL,
   ERROR,
-  UNDEFINED_VARIABLE
+  UNDEFINED_VARIABLE,
+  NULL_LIST
 } atom_label_t;
 
 //! atomを表す構造体.

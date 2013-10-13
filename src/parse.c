@@ -8,78 +8,86 @@
 
 #include "parse.h"
 
+#define matchTwo(a,b,c) ( (a == b) || (a == c) )
+
+static bool isFinFunc = false;
+//! -1が返ってきたらexitするgetchar
+static inline int getcharWithExit()
+{
+    int tmp;    
+    if ( (tmp = getchar() ) == -1 )
+	exit(0);
+    return tmp;
+}
+
 atom_t parseAtom(void)
 {
   int ch;
   
-  while ( ( ch = getchar () ) != -1) 
-    {
-      if ( ch == ' ' || ch == '\n' ) 
-	continue;
-      else if ( ch == ';' ) 
-	{
-	  while ( ( ch = getchar () ) != -1 && ch != '\n' ) ;
-	  continue;
-	}
-      else if ( ch == '(' )
-	{
-	  list_t list;
-	  while ( ( ch = getchar () ) != -1 && (ch == ' ' || ch == '\n' )) ;
+  while( ( ch = getchar () ) != -1 && ( ch == ' ' || ch == '\n' )) ;
+  
+  return parseAtomWithFirstChar(ch);
+}
 
-	  // ここインチキしている
-	  if ( ch != ')' )
-	    {
-	      list.car = parseAtomWithFirstChar(ch);
-	    }
-	  fprintf(stderr,"not defined yet\n");
-	  abort();
-	}
-      else if ( ch  == '"' )
-	{
-	  displayAtom( parseString() );
-	}
-      else if ( ch == '#' )
-	{
-	  if( ( ch = getchar () ) == -1)
-	    exit(0);
-	  //true mode
-	  if (ch == 't')
-	    {
-	      displayAtom( (atom_t){.label=BOOL,.boolData=true} );
-	      continue;
-	    }
-	  //fales mode
-	  if (ch == 'f')
-	    {
-	      displayAtom( (atom_t){.label=BOOL,.boolData=false} );
-	      continue;
-	    }
+atom_t parseAtomWithFirstChar(char ch)
+{
+  if ( ch == -1 )
+    exit(0);
+    
+_parseAtom1:
+  switch (ch) {
+  case ';':
+      while ( ( ch = getchar () ) != -1 && ch != '\n' ) ;
+      goto _parseAtom1;
+  case '(' : {
+      list_t * first;
+      list_t * now;
+      list_t * last;
+      while ( ( ch = getchar () ) != -1 && (ch == ' ' || ch == '\n' )) ;
+      
+      if ( ch != ')' )
+      {
+	  first = mallocWithErr(sizeof(list_t));
+	  now = first;
+	  while ( ch != ')' ) {
+	      if ( ch == ' ' || ch == '\n' ) {
+		  ch = getcharWithExit();
+		  continue;
+	      }
+	      now->car = parseAtomWithFirstChar(ch);
+	      now->cdr = (atom_t){.label=POINTER_OF_LIST,.pointerData=mallocWithErr(sizeof(list_t))};
+	      last = now;
+	      now = now->cdr.pointerData;
+	      if ( isFinFunc ) {
+		  isFinFunc = false;
+		  break;
+	      }
+	      ch = getcharWithExit();
+	  }
+	  last->cdr.pointerData = NULL;
+	  free(now);
+      }
+      return (atom_t){.label=POINTER_OF_LIST,.pointerData=first};
+  }
+  case '"' :
+      return parseString();
+  case '#' :
+      if( ( ch = getchar () ) == -1)
+	  exit(0);
 
-	  // char mode
-	  if (ch == '\\')
-	    {
-	       char c;
-	       if( ( ch = getchar () ) == -1)
-		 exit(0);
-	       c = ch;
-	       if( ( ch = getchar () ) == -1)
-		 exit(0);
-	       if( ch == ' ' || ch == '\n')
-		 {
-		   displayAtom( (atom_t){.label=CHAR,.charData=c} );
-		   continue;
-		 }
-	       fprintf(stderr,"unknown character name\n");
-	       abort();
-	    }
-	  fprintf(stderr,"not defined yet\n");
+      switch ( ch ) {
+      case 't' :
+	  return (atom_t){.label=BOOL,.boolData=true};
+      case 'f' :
+	  return (atom_t){.label=BOOL,.boolData=false};
+      case '\\' :
+	  return parseChar();
+      }
+      fprintf(stderr,"not defined yet\n");
 	  abort();
-	}
-      else
-	{
-	  displayAtom( parseAtomWithFirstChar(ch) );	  
-	}
-    }
+  default :
+      return parseOtherAtomWithFirseChar(ch);
+  }
 }
 
 atom_t parseString(void)
@@ -92,8 +100,14 @@ atom_t parseString(void)
   str = mallocWithErr( strSize );
   while ( ( ch = getchar () ) != -1 && ch != '"')
     {
-      str[t] = ch;
-      t++;
+      if ( (t + 1) >= strSize )
+	{
+	  strSize += mallocByte;
+	  str = reallocWithErr(str, strSize );
+	}
+	
+	str[t] = ch;
+	t++;
     } 
   str[t] = '\0';
 
@@ -103,8 +117,37 @@ atom_t parseString(void)
   return ret;
 }
 
+atom_t parseChar(void)
+{
+    int t = 2;
+    char c;
+    char ch;
+    char * str;
+    c = getcharWithExit();
+    ch = getcharWithExit();
+    if( ch == ' ' || ch == '\n')
+	return (atom_t){.label=CHAR,.charData=c};
 
-atom_t parseAtomWithFirstChar(char ch)
+    size_t strSize = mallocByte; 
+    str = mallocWithErr( strSize );
+    str[0] = c;
+    str[1] = ch;
+    while ( ( ch = getchar () ) != -1 && ch != '\n' && ch != ' ')
+    {
+	if ( (t + 1) >= strSize )	{
+	    strSize += mallocByte;
+	    str = reallocWithErr(str, strSize );
+	}
+	
+	str[t] = ch;
+	t++;
+    } 
+    str[t] = '\0';
+    printf ("error : unknown character #\\%s\n",str);
+    return (atom_t){.label=ERROR};
+}
+
+atom_t parseOtherAtomWithFirseChar(char ch)
 {
   int t = 0;
   char * str;
@@ -131,8 +174,11 @@ atom_t parseAtomWithFirstChar(char ch)
       
       str[t] = ch;
       t++;
-    } while ( ( ch = getchar () ) != -1 && ch != '\n'  && ch != ' ' );
+    } while ( ( ch = getchar () ) != -1 && ch != '\n'  && ch != ' ' && ch != ')' );
   str[t] = '\0';
+
+  if ( ch == ')' )
+      isFinFunc = true;
 
   if ( isInt )
     {
