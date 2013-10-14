@@ -164,4 +164,7 @@ _execute (atom_t functionAtom, list_t * args)
 		      t->car.pointerData->cdr.pointerData);
       return functionAtom.systemFunction (args);
     }
+  return (atom_t)
+  {
+  .label = ERROR};
 }

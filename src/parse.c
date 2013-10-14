@@ -187,10 +187,12 @@ parseOtherAtomWithFirseChar (char ch)
       if (ch != '.' && (ch < '0' || ch > '9'))
 	isDouble = isInt = false;
       if (ch == '.')
-	if (!isInt)
-	  isDouble = false;
-	else
-	  isInt = false;
+	{
+	  if (!isInt)
+	    isDouble = false;
+	  else
+	    isInt = false;
+	}
 
       if ((t + 1) >= strSize)
 	{

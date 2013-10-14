@@ -36,9 +36,8 @@ main ()
 	    displayAtom (atom);
 	  else
 	    {
-	      atom_t ret =
-		_execute (atom.pointerData->car,
-			  atom.pointerData->cdr.pointerData);
+	      atom_t ret = _execute (atom.pointerData->car,
+				     atom.pointerData->cdr.pointerData);
 	      if (ret.label != POINTER_OF_LIST && ret.label != LAMBDA)
 		displayAtom (ret);
 	      else

@@ -37,4 +37,25 @@ else
     echo "test 5 passed!!";
 fi
 
+if [ "$(echo '(cons 1 3)' | ./scheme)" != '( 1 . 3 )'  ]; then
+    echo "test 6 not passed!!";
+    exit -1;
+else
+    echo "test 6 passed!!";
+fi
+
+if [ $(echo "(car (cons 1 3))" | ./scheme) -ne 1 ]; then
+    echo "test 7 not passed!!";
+    exit -1;
+else
+    echo "test 7 passed!!";
+fi
+
+if [ $(echo "(cdr (cons 1 3))" | ./scheme) -ne 3 ]; then
+    echo "test 8 not passed!!";
+    exit -1;
+else
+    echo "test 8 passed!!";
+fi
+
 echo "all tests passed successfully!!"

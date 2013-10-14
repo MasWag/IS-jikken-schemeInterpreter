@@ -31,6 +31,12 @@ init (void)
   setData ("cons", (atom_t)
 	   {
 	   .label = SYSTEM_FUNCTION,.systemFunction = _cons});
+  setData ("car", (atom_t)
+	   {
+	   .label = SYSTEM_FUNCTION,.systemFunction = _car});
+  setData ("cdr", (atom_t)
+	   {
+	   .label = SYSTEM_FUNCTION,.systemFunction = _cdr});
   setData ("quit", (atom_t)
 	   {
 	   .label = SYSTEM_FUNCTION,.systemFunction = _quit});
