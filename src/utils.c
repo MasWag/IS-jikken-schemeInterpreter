@@ -133,6 +133,9 @@ atom_t _execute(atom_t functionAtom,list_t* args)
 	return (atom_t){.label=ERROR,};
     }
     else if(functionAtom.label == SYSTEM_FUNCTION ){
+        for ( list_t *t = args; t != NULL ; t = t->cdr.pointerData) 
+            if ( t->car.label == POINTER_OF_LIST )
+                t->car = _execute(t->car.pointerData->car,t->car.pointerData->cdr.pointerData);
 	return functionAtom.systemFunction(args);
     }
 }
