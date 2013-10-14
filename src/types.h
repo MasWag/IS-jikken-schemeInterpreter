@@ -20,6 +20,7 @@ typedef enum {
   INT,
   DOUBLE,
   POINTER_OF_LIST,
+  LAMBDA,
   SYSTEM_FUNCTION,
   STRING,
   CHAR,
@@ -32,7 +33,7 @@ typedef enum {
 //! atomを表す構造体.
 typedef struct _atom_t {
   atom_label_t label;
-  /* union { */
+   union { 
     char charData;
     int intData;
     double doubleData;
@@ -40,7 +41,7 @@ typedef struct _atom_t {
     char* stringData;
     bool boolData;
     struct _list_t* pointerData;
-  /* }; */
+  }; 
 } atom_t;
 
 //! listを表す構造体.

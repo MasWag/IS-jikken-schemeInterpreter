@@ -83,13 +83,13 @@ void displayAtomWithoutLF(atom_t in)
 void displayListWithoutBraces(list_t list)
 {
     putchar(' ');
-    if ( list.car.label != POINTER_OF_LIST ) 
+    if ( list.car.label != POINTER_OF_LIST && list.car.label != LAMBDA) 
 	displayAtomWithoutLF(list.car);
     else
 	displayList(*(list.car.pointerData));   
     if ( list.cdr.pointerData == NULL )
 	return;    
-    if ( list.cdr.label != POINTER_OF_LIST ) {
+    if ( list.cdr.label != POINTER_OF_LIST && list.cdr.label != LAMBDA) {
 	displayAtomWithoutLF(list.cdr);
     }
     else
@@ -124,7 +124,7 @@ atom_t _execute(atom_t functionAtom,list_t* args)
 {
     if ( functionAtom.label == ERROR )
 	return functionAtom;
-    if ( functionAtom.label == POINTER_OF_LIST )
+    if ( functionAtom.label == LAMBDA )
 	functionAtom = _execute(functionAtom.pointerData->car,functionAtom.pointerData->cdr.pointerData);    
     else if( functionAtom.label != SYSTEM_FUNCTION ) {
 	printf("error: ");
@@ -134,7 +134,7 @@ atom_t _execute(atom_t functionAtom,list_t* args)
     }
     else if(functionAtom.label == SYSTEM_FUNCTION ){
         for ( list_t *t = args; t != NULL ; t = t->cdr.pointerData) 
-            if ( t->car.label == POINTER_OF_LIST )
+            if ( t->car.label == LAMBDA )
                 t->car = _execute(t->car.pointerData->car,t->car.pointerData->cdr.pointerData);
 	return functionAtom.systemFunction(args);
     }

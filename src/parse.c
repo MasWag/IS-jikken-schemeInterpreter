@@ -55,7 +55,7 @@ _parseAtom1:
 		  continue;
 	      }
 	      now->car = parseAtomWithFirstChar(ch);
-	      now->cdr = (atom_t){.label=POINTER_OF_LIST,.pointerData=mallocWithErr(sizeof(list_t))};
+	      now->cdr = (atom_t){.label=LAMBDA,.pointerData=mallocWithErr(sizeof(list_t))};
 	      last = now;
 	      now = now->cdr.pointerData;
 	      if ( isFinFunc ) {
@@ -67,7 +67,7 @@ _parseAtom1:
 	  last->cdr.pointerData = NULL;
 	  free(now);
       }
-      return (atom_t){.label=POINTER_OF_LIST,.pointerData=first};
+      return (atom_t){.label=LAMBDA,.pointerData=first};
   }
   case '"' :
       return parseString();

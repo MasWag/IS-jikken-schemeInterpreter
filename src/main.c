@@ -30,7 +30,7 @@ int main ()
 	}
       else {
 	  atom_t atom = parseAtomWithFirstChar( ch );
-	  if ( atom.label != POINTER_OF_LIST ) 
+	  if ( atom.label != LAMBDA ) 
 	      displayAtom(atom);
 	  else {
 	      /* displayList( *(atom.pointerData) ); */
