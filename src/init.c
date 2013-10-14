@@ -10,12 +10,28 @@
 #include "types.h"
 #include "library.h"
 
-void init(void)
+void
+init (void)
 {
-    setData("a",(atom_t){.label=INT,.intData=3});
-    setData("+",(atom_t){.label=SYSTEM_FUNCTION,.systemFunction=_plus});
-    setData("-",(atom_t){.label=SYSTEM_FUNCTION,.systemFunction=_minus});
-    setData("*",(atom_t){.label=SYSTEM_FUNCTION,.systemFunction=_multiply});
-    setData("/",(atom_t){.label=SYSTEM_FUNCTION,.systemFunction=_div});
-    setData("quit",(atom_t){.label=SYSTEM_FUNCTION,.systemFunction=_quit});
+  setData ("a", (atom_t)
+	   {
+	   .label = INT,.intData = 3});
+  setData ("+", (atom_t)
+	   {
+	   .label = SYSTEM_FUNCTION,.systemFunction = _plus});
+  setData ("-", (atom_t)
+	   {
+	   .label = SYSTEM_FUNCTION,.systemFunction = _minus});
+  setData ("*", (atom_t)
+	   {
+	   .label = SYSTEM_FUNCTION,.systemFunction = _multiply});
+  setData ("/", (atom_t)
+	   {
+	   .label = SYSTEM_FUNCTION,.systemFunction = _div});
+  setData ("cons", (atom_t)
+	   {
+	   .label = SYSTEM_FUNCTION,.systemFunction = _cons});
+  setData ("quit", (atom_t)
+	   {
+	   .label = SYSTEM_FUNCTION,.systemFunction = _quit});
 }

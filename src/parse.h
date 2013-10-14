@@ -16,8 +16,8 @@
 #include "params.h"
 
 //! atomをparseする
-atom_t parseAtom(void);
-atom_t parseAtomWithFirstChar(char ch);
-atom_t parseOtherAtomWithFirseChar(char ch);
-atom_t parseString(void);
-atom_t parseChar(void);
+atom_t parseAtom (void);
+atom_t parseAtomWithFirstChar (char ch);
+atom_t parseOtherAtomWithFirseChar (char ch);
+atom_t parseString (void);
+atom_t parseChar (void);

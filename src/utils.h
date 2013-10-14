@@ -14,23 +14,24 @@
 #include "types.h"
 
 //! error処理をやってくれるmalloc
-void * mallocWithErr(size_t size);
+void *mallocWithErr (size_t size);
 
 //! error処理をやってくれるrealloc
-void * reallocWithErr(void* ptr,size_t size);
+void *reallocWithErr (void *ptr, size_t size);
 
 //! atomのdisplay関数
-void displayAtomWithoutLF(atom_t in);
+void displayAtomWithoutLF (atom_t in);
 #define displayAtom(a) ( displayAtomWithoutLF(a),putchar('\n') )
 
 //! listのdisplay関数
-void displayList(list_t in);
+void displayListWithoutLF (list_t in);
+#define displayList(a) ( displayListWithoutLF(a),putchar('\n') )
 
 //! define関数
-atom_t _define(list_t*);
+atom_t _define (list_t *);
 
 //! execute関数
-atom_t _execute(atom_t,list_t*);
+atom_t _execute (atom_t, list_t *);
 
 //! listのcar
 #define car(l) (l.car)

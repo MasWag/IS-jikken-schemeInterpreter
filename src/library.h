@@ -11,10 +11,11 @@
 
 #include "types.h"
 
-atom_t _plus(list_t*);
-atom_t _minus(list_t*);
-atom_t _multiply(list_t*);
-atom_t _div(list_t*);
-atom_t _quit(list_t*);
+atom_t _plus (list_t *);
+atom_t _minus (list_t *);
+atom_t _multiply (list_t *);
+atom_t _div (list_t *);
+atom_t _cons (list_t *);
+atom_t _quit (list_t *);
 
 #endif

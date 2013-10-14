@@ -10,36 +10,44 @@
 #include "parse.h"
 #include "utils.h"
 
-extern void init(void);
+extern void init (void);
 
-int main ()
+int
+main ()
 {
 
-  init();
+  init ();
 
   int ch;
-  
-  while ( ( ch = getchar () ) != -1) 
+
+  while ((ch = getchar ()) != -1)
     {
-      if ( ch == ' ' || ch == '\n' ) 
+      if (ch == ' ' || ch == '\n')
 	continue;
-      else if ( ch == ';' ) 
+      else if (ch == ';')
 	{
-	  while ( ( ch = getchar () ) != -1 && ch != '\n' ) ;
+	  while ((ch = getchar ()) != -1 && ch != '\n');
 	  continue;
 	}
-      else {
-	  atom_t atom = parseAtomWithFirstChar( ch );
-	  if ( atom.label != LAMBDA ) 
-	      displayAtom(atom);
-	  else {
-	      /* displayList( *(atom.pointerData) ); */
-		  displayAtom(_execute(atom.pointerData->car,atom.pointerData->cdr.pointerData));
+      else
+	{
+	  atom_t atom = parseAtomWithFirstChar (ch);
+	  if (atom.label != LAMBDA)
+	    displayAtom (atom);
+	  else
+	    {
+	      atom_t ret =
+		_execute (atom.pointerData->car,
+			  atom.pointerData->cdr.pointerData);
+	      if (ret.label != POINTER_OF_LIST && ret.label != LAMBDA)
+		displayAtom (ret);
+	      else
+		displayList (*(ret.pointerData));
 
-	  }
-	 
-      }
+	    }
+
+	}
     }
-  
+
   return 0;
 }
