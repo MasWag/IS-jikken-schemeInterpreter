@@ -36,7 +36,7 @@ typedef struct _atom_t {
     char charData;
     int intData;
     double doubleData;
-    struct _atom_t (*systemFunction)(list_t);
+    struct _atom_t (*systemFunction)(struct _list_t*);
     char* stringData;
     bool boolData;
     struct _list_t* pointerData;

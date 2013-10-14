@@ -8,9 +8,11 @@
 
 #include "data.h"
 #include "types.h"
+#include "library.h"
 
 void init(void)
 {
     setData("a",(atom_t){.label=INT,.intData=3});
-
+    setData("+",(atom_t){.label=SYSTEM_FUNCTION,.systemFunction=_plus});
+    setData("quit",(atom_t){.label=SYSTEM_FUNCTION,.systemFunction=_quit});
 }

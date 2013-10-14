@@ -34,8 +34,8 @@ int main ()
 	      displayAtom(atom);
 	  else {
 	      /* displayList( *(atom.pointerData) ); */
-	      if ( atom.pointerData->cdr.pointerData != NULL )
-		  displayAtom(_execute(atom.pointerData->car,*(atom.pointerData->cdr.pointerData)));
+		  displayAtom(_execute(atom.pointerData->car,atom.pointerData->cdr.pointerData));
+
 	  }
 	 
       }
