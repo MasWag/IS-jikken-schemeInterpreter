@@ -16,3 +16,6 @@ check-syntax:
 	$(CC) $(CFLAGS) -o nul -S ${CHK_SOURCES}
 clean:
 	rm -f *.o *flymake* scheme
+
+test:scheme
+	./runtest	

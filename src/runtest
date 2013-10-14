@@ -1,0 +1,40 @@
+#!/bin/sh
+
+if [ $(echo "(+ 2 3)" | ./scheme) -ne 5 ]; then
+    echo "test 1 not passed!!";
+    exit -1;
+else
+    echo "test 1 passed!!";
+fi
+
+if [ $(echo "(- 2 3)" | ./scheme) -ne -1 ]; then
+    echo "test 2 not passed!!";
+    exit -1;
+else
+    echo "test 2 passed!!";
+fi
+
+
+if [ $(echo "(* 2 3)" | ./scheme) -ne 6 ]; then
+    echo "test 3 not passed!!";
+    exit -1;
+else
+    echo "test 3 passed!!";
+fi
+
+if [ $(echo "(/ 15 3)" | ./scheme) -ne 5 ]; then
+    echo "test 4 not passed!!";
+    exit -1;
+else
+    echo "test 4 passed!!";
+fi
+
+
+if [ $(echo "(+ (- 4 1) 3)" | ./scheme) -ne 6 ]; then
+    echo "test 5 not passed!!";
+    exit;
+else
+    echo "test 5 passed!!";
+fi
+
+echo "all tests passed successfully!!"
