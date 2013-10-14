@@ -2,7 +2,9 @@ CC = gcc
 SRCS = $(wildcard *.c)
 OBJS = $(SRCS:.c=.o)
 
-CFLAGS = -std=gnu99 -Wall -g
+CFLAGS = -std=gnu11 -Wall -g
+
+all: scheme
 
 scheme: $(OBJS)
 	$(CC) $(OBJS) $(CFLAGS) -o $@
