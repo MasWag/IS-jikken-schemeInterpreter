@@ -43,3 +43,5 @@ atom_t _execute (atom_t, list_t *);
 #define cons( a , b ) ( (list_t){.car = a,.cdr = b})
 
 #define mkErrorMes(a) ( (atom_t){.label=ERROR,.stringData=a} )
+
+void freeList(list_t*);

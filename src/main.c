@@ -40,9 +40,10 @@ main ()
 				     atom.pointerData->cdr.pointerData);
 	      if (ret.label != POINTER_OF_LIST && ret.label != LAMBDA)
 		displayAtom (ret);
-	      else
+	      else {
 		displayList (*(ret.pointerData));
-
+		freeList ( ret.pointerData );
+	      }
 	    }
 
 	}

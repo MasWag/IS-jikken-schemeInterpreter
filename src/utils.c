@@ -168,3 +168,16 @@ _execute (atom_t functionAtom, list_t * args)
   {
   .label = ERROR};
 }
+
+void freeList(list_t * src)
+{
+  if ( src == NULL )
+    return;
+
+  if ( src->car.label == POINTER_OF_LIST || src->car.pointerData != NULL )
+    freeList( src->car.pointerData );
+  if ( src->cdr.label == POINTER_OF_LIST || src->cdr.pointerData != NULL )
+    freeList( src->cdr.pointerData );
+  
+  free ( src );
+}
