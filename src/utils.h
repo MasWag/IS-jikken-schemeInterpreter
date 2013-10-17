@@ -31,7 +31,7 @@ void displayListWithoutLF (list_t in);
 atom_t _define (list_t *);
 
 //! execute関数
-atom_t _execute (atom_t, list_t *);
+atom_t _execute (atom_t,const list_t *);
 
 //! lambda
 atom_t _lambda ( list_t *);

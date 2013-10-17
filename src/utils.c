@@ -152,8 +152,7 @@ _lambda (list_t * args)
   return (atom_t){.label=FUNCTION,.lambdaData={.args=args->car.pointerData,.expression=args->cdr.pointerData->car.pointerData}};
 }
 
-atom_t
-_execute (atom_t functionAtom, list_t * args)
+atom_t _execute (atom_t functionAtom,const list_t * args)
 {
   if (functionAtom.label == ERROR)
     return functionAtom;
@@ -200,4 +199,51 @@ void freeList(list_t * src)
     freeList( src->cdr.pointerData );
   
   free ( src );
+}
+
+atom_t copyLambda(atom_t srcAtom, dataList_t dataList)
+{
+
+}
+
+atom_t executeLambda(atom_t functionAtom,const list_t * args)
+{
+//! freeするときはdataHeadからfunctionAtom.lambdaData.dataListの直前までをfreeする
+  dataList_t* dataHead;
+  dataList_t* dataNow;
+  dataList_t* dataHead~;
+  list_t * argsNow;
+  if ( functionAtom.label != FUNCTION )
+    {
+      return mkErrorMes( "internal error in executeLambda (util.c)" );
+    }
+
+  argsNow = functionAtom.lambdaData.args;
+  dataHead = malloc( sizeof(dataList_t) );
+  dataTail = dataHead~ = malloc(sizeof(dataList_t) );
+  dataHead~->cdr = dataHead
+
+  for ( list_t *t = args; t != NULL; t = t->cdr.pointerData )
+    {
+      if ( argsNow == NULL )
+	{
+	  freeList( dataHead->cdr );
+	  return mkErrorMes( "Error : too much args!! " );
+	}
+      
+      dataTail->cdr->car = (data_t){.label=argsNow->car.stringData,.data=t->car};
+      dataTail->cdr->cdr = malloc( sizeof(dataList_t) );
+      dataTail = dataTail->cdr;
+      argsNow = argsNow->cdr.pointerData;
+    }
+  free ( dataTail->cdr->cdr );
+  dataTail->cdr = functionAtom.lambdaData.dataList;
+  free ( dataHead~ );
+  // ここまでlocal variableのlistの処理
+  
+  if ( argsNow != NULL )
+      return (atom_t){.label=FUNCTION,.lambdaData={.args=argsNow,.expression=functionAtom.lambdaData.expression,.dataList=dataHead};
+  
+  // ここからlambda式のcopyと変数展開
+  
 }
