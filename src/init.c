@@ -40,4 +40,7 @@ init (void)
   setData ("quit", (atom_t)
 	   {
 	   .label = SYSTEM_FUNCTION,.systemFunction = _quit});
+  setData ("lambda", (atom_t)
+	   {
+	   .label = SYSTEM_FUNCTION,.systemFunction = _lambda});
 }

@@ -38,11 +38,19 @@ main ()
 	    {
 	      atom_t ret = _execute (atom.pointerData->car,
 				     atom.pointerData->cdr.pointerData);
-	      if (ret.label != POINTER_OF_LIST && ret.label != LAMBDA)
-		displayAtom (ret);
-	      else {
-		displayList (*(ret.pointerData));
-		freeList ( ret.pointerData );
+	      switch ( ret.label )
+		{
+		case POINTER_OF_LIST:
+		case LAMBDA :
+		  displayList (*(ret.pointerData));
+		  freeList ( ret.pointerData );
+		  break;
+		case FUNCTION:
+		  puts("LAMBDA");
+		  break;
+		default :
+		  displayAtom (ret);
+		  break;
 	      }
 	    }
 
