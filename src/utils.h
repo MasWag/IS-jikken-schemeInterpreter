@@ -33,6 +33,9 @@ atom_t _define (list_t *);
 //! execute関数
 atom_t _execute (atom_t, list_t *);
 
+//! lambda
+atom_t _lambda ( list_t *);
+
 //! listのcar
 #define car(l) (l.car)
 

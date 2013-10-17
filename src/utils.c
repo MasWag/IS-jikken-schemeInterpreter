@@ -138,6 +138,28 @@ _define (list_t * args)
 }
 
 atom_t
+_lambda (list_t * args)
+{
+  if (args == NULL || args->cdr.pointerData == NULL
+      || args->cdr.pointerData->cdr.pointerData != NULL)
+    return (atom_t)
+    {
+    .label = ERROR,.stringData =
+	"ERROR: Syntax error: lambda : args -> function -> atom"};
+  if (args->car.label != POINTER_OF_LIST)
+    {
+      printf ("error: ");
+      displayAtom (args->car);
+      puts (" is not string");
+      return (atom_t)
+      {
+      .label = BOOL,.boolData = false};
+    }
+  /* setData (args->car.stringData, args->cdr.pointerData->car); */
+  return args->cdr.pointerData->car;
+}
+
+atom_t
 _execute (atom_t functionAtom, list_t * args)
 {
   if (functionAtom.label == ERROR)
