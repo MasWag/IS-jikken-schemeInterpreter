@@ -43,4 +43,7 @@ init (void)
   setData ("lambda", (atom_t)
 	   {
 	   .label = SYSTEM_FUNCTION,.systemFunction = _lambda});
+  setData ("if", (atom_t)
+	   {
+	   .label = SYSTEM_FUNCTION,.systemFunction = _if});
 }

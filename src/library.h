@@ -20,5 +20,6 @@ atom_t _car (list_t *);
 atom_t _cdr (list_t *);
 atom_t _quit (list_t *);
 atom_t _equal (list_t *);
+atom_t _if (list_t *);
 
 #endif

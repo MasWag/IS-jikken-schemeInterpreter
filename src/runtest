@@ -73,4 +73,18 @@ else
     echo "test 10 passed!!";
 fi
 
+if [ $(echo "(if 3 4 5)" | ./scheme) -ne 4 ]; then
+    echo "test 11 not passed!!";
+    exit -1;
+else
+    echo "test 11 passed!!";
+fi
+
+if [ $(echo '(if #f 4 5)' | ./scheme) -ne 5 ]; then
+    echo "test 12 not passed!!";
+    exit -1;
+else
+    echo "test 12 passed!!";
+fi
+
 echo "all tests passed successfully!!"

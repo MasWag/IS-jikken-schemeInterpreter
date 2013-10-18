@@ -250,3 +250,17 @@ _minus (list_t * args)
 
   return (atom_t){.label=BOOL,.boolData=false};
 }
+
+ atom_t  _if (list_t * args) 
+{
+  if (args == NULL || args->cdr.pointerData == NULL 
+       ||args->cdr.pointerData->cdr.pointerData == NULL || args->cdr.pointerData->cdr.pointerData->cdr.pointerData != NULL)
+    return (atom_t) 
+    {
+    .label = ERROR,.stringData =
+	"ERROR: Syntax error: if : bool -> expr -> expr -> atom"};
+  if ( args->car.label == BOOL && args->car.boolData == false)
+      return args->cdr.pointerData->cdr.pointerData->car;
+  return args->cdr.pointerData->car;
+}
+
