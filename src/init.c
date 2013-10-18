@@ -46,4 +46,8 @@ init (void)
   setData ("if", (atom_t)
 	   {
 	   .label = SYSTEM_FUNCTION,.systemFunction = _if});
+  setData ("=", (atom_t)
+	   {
+	   .label = SYSTEM_FUNCTION,.systemFunction = _equal});
+  
 }
