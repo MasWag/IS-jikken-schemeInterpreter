@@ -35,7 +35,7 @@ getLocalData( char* label, dataList_t * in)
     }
   return (atom_t)
   {
-  .label = UNDEFINED_VARIABLE,.stringData = label};
+      .label = UNDEFINED_VARIABLE,.stringData = label,.variableName=label};
 }
 
 //! dataを格納しているlistから要素を取り出す

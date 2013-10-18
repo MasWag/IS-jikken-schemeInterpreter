@@ -48,3 +48,5 @@ atom_t _lambda ( list_t *);
 #define mkErrorMes(a) ( (atom_t){.label=ERROR,.stringData=a} )
 
 void freeList(list_t*);
+
+atom_t executeLambda(atom_t functionAtom,const list_t * args);

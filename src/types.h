@@ -57,6 +57,7 @@ typedef struct _atom_t
     bool boolData;
     struct _list_t *pointerData;
   };
+    char *variableName;
 } atom_t;
 
 //! listを表す構造体.

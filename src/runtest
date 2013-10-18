@@ -58,4 +58,19 @@ else
     echo "test 8 passed!!";
 fi
 
+if [ "$(echo '(define s (lambda (x) (+ x 1 ))) (s 1)' | ./scheme)" != 'LAMBDA
+2' ]; then
+    echo "test 9 not passed!!";
+    exit -1;
+else
+    echo "test 9 passed!!";
+fi
+
+if [ "$(echo '(= 3.0 3)' | ./scheme)" == "#t" ]; then
+    echo "test 10 not passed!!";
+    exit -1;
+else
+    echo "test 10 passed!!";
+fi
+
 echo "all tests passed successfully!!"
