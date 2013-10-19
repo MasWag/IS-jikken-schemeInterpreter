@@ -7,6 +7,7 @@
 */
 
 #include "utils.h"
+#include "library.h"
 
 //! error処理をやってくれるmalloc
 void *
@@ -150,7 +151,7 @@ _lambda (list_t * args)
     {
     .label = ERROR,.stringData =
 	"ERROR: Syntax error: lambda : args -> function -> atom"};
-  dataList = malloc ( sizeof( dataList_t ) );
+  dataList = mallocWithErr ( sizeof( dataList_t ) );
 
   return (atom_t){.label=FUNCTION,.lambdaData={.args=args->car.pointerData,.expression=args->cdr.pointerData->car.pointerData}};
 }
@@ -173,10 +174,21 @@ atom_t _execute (atom_t functionAtom,const list_t * args)
       .label = ERROR,};
     }
   else if (functionAtom.label == FUNCTION)
-      return executeLambda(functionAtom,args);
+    {
+	for (list_t * t = args; t != NULL; t = t->cdr.pointerData)
+	    if (t->car.label == LAMBDA)
+	    {
+	      atom_t tmp =
+		_execute (t->car.pointerData->car,
+			  t->car.pointerData->cdr.pointerData);
+	      free( t->car.pointerData);
+	      t->car = tmp;
+	    }
+	return executeLambda(functionAtom,args);
+    }
   else if (functionAtom.label == SYSTEM_FUNCTION)
     {
-      if ( functionAtom.systemFunction != _lambda )
+      if ( functionAtom.systemFunction != _lambda && functionAtom.systemFunction != _if ) 
 	for (list_t * t = args; t != NULL; t = t->cdr.pointerData)
 	  if (t->car.label == LAMBDA)
 	    {
@@ -208,13 +220,13 @@ void freeList(list_t * src)
 
 void copyLambda(atom_t srcAtom,atom_t** destAtom ,dataList_t* dataList)
 {
-    *destAtom = malloc( sizeof( atom_t ) );
+    *destAtom = mallocWithErr( sizeof( atom_t ) );
     memcpy(*destAtom,&srcAtom,sizeof ( atom_t ) );
     switch ( srcAtom.label ) {
     case POINTER_OF_LIST:
     case LAMBDA:
 	if ( srcAtom.pointerData != NULL ) {
-	    (*destAtom)->pointerData = malloc( sizeof(list_t) );
+	    (*destAtom)->pointerData = mallocWithErr( sizeof(list_t) );
 	    atom_t * car = &((*destAtom)->pointerData->car);
 	    atom_t * cdr = &((*destAtom)->pointerData->cdr);
 	    copyLambda(srcAtom.pointerData->car,&car,dataList);
@@ -225,6 +237,8 @@ void copyLambda(atom_t srcAtom,atom_t** destAtom ,dataList_t* dataList)
 	break;
     case UNDEFINED_VARIABLE:
 	**destAtom = getLocalData((*destAtom)->variableName,dataList);
+	if ((*destAtom)->label == UNDEFINED_VARIABLE) 
+	    **destAtom = getData((*destAtom)->variableName);
 	break;
     default:
 	break;
@@ -245,8 +259,8 @@ atom_t executeLambda(atom_t functionAtom,const list_t * args)
     }
 
   argsNow = functionAtom.lambdaData.args;
-  dataHead = malloc( sizeof(dataList_t) );
-  dataNow = dataHead_ = malloc(sizeof(dataList_t) );
+  dataHead = mallocWithErr( sizeof(dataList_t) );
+  dataNow = dataHead_ = mallocWithErr(sizeof(dataList_t) );
   dataHead_->cdr = dataHead;
   
   for ( list_t *t = args; t != NULL; t = t->cdr.pointerData ) {
@@ -256,7 +270,7 @@ atom_t executeLambda(atom_t functionAtom,const list_t * args)
       }
       
       dataNow->cdr->car = (data_t){.label=argsNow->car.stringData,.data=t->car};
-      dataNow->cdr->cdr = malloc( sizeof(dataList_t) );
+      dataNow->cdr->cdr = mallocWithErr( sizeof(dataList_t) );
       dataNow = dataNow->cdr;
       argsNow = argsNow->cdr.pointerData;
   }
