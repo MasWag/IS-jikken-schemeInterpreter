@@ -251,6 +251,150 @@ _minus (list_t * args)
   return (atom_t){.label=BOOL,.boolData=false};
 }
 
+ atom_t  _gt (list_t * args) 
+{
+  float arg1,arg2;
+  if (args == NULL || args->cdr.pointerData == NULL 
+       ||args->cdr.pointerData->cdr.pointerData != NULL)
+    return (atom_t) 
+    {
+    .label = ERROR,.stringData =
+	"ERROR: Syntax error: > : atom -> atom -> bool"};
+  switch ( args->car.label) {
+  case INT:
+      arg1 = args->car.intData;
+      break;
+  case DOUBLE:
+      arg1 = args->car.doubleData;
+      break;
+  default :
+      return ( atom_t){.label = ERROR,.stringData="In procedure >: Wrong type argument in position 1"};
+  }
+
+  switch ( args->cdr.pointerData->car.label) {
+  case INT:
+      arg2 = args->cdr.pointerData->car.intData;
+      break;
+  case DOUBLE:
+      arg2 = args->cdr.pointerData->car.doubleData;
+      break;
+  default :
+      return ( atom_t){.label = ERROR,.stringData="In procedure >: Wrong type argument in position 2"};
+  }
+  if ( arg1 > arg2 )
+      return (atom_t){.label=BOOL,.boolData=true};
+
+  return (atom_t){.label=BOOL,.boolData=false};
+}
+
+ atom_t  _gtq (list_t * args) 
+{
+  float arg1,arg2;
+  if (args == NULL || args->cdr.pointerData == NULL 
+       ||args->cdr.pointerData->cdr.pointerData != NULL)
+    return (atom_t) 
+    {
+    .label = ERROR,.stringData =
+	"ERROR: Syntax error: >= : atom -> atom -> bool"};
+  switch ( args->car.label) {
+  case INT:
+      arg1 = args->car.intData;
+      break;
+  case DOUBLE:
+      arg1 = args->car.doubleData;
+      break;
+  default :
+      return ( atom_t){.label = ERROR,.stringData="In procedure >=: Wrong type argument in position 1"};
+  }
+
+  switch ( args->cdr.pointerData->car.label) {
+  case INT:
+      arg2 = args->cdr.pointerData->car.intData;
+      break;
+  case DOUBLE:
+      arg2 = args->cdr.pointerData->car.doubleData;
+      break;
+  default :
+      return ( atom_t){.label = ERROR,.stringData="In procedure >=: Wrong type argument in position 2"};
+  }
+  if ( arg1 >= arg2 )
+      return (atom_t){.label=BOOL,.boolData=true};
+
+  return (atom_t){.label=BOOL,.boolData=false};
+}
+
+ atom_t  _le (list_t * args) 
+{
+  float arg1,arg2;
+  if (args == NULL || args->cdr.pointerData == NULL 
+       ||args->cdr.pointerData->cdr.pointerData != NULL)
+    return (atom_t) 
+    {
+    .label = ERROR,.stringData =
+	"ERROR: Syntax error: < : atom -> atom -> bool"};
+  switch ( args->car.label) {
+  case INT:
+      arg1 = args->car.intData;
+      break;
+  case DOUBLE:
+      arg1 = args->car.doubleData;
+      break;
+  default :
+      return ( atom_t){.label = ERROR,.stringData="In procedure <: Wrong type argument in position 1"};
+  }
+
+  switch ( args->cdr.pointerData->car.label) {
+  case INT:
+      arg2 = args->cdr.pointerData->car.intData;
+      break;
+  case DOUBLE:
+      arg2 = args->cdr.pointerData->car.doubleData;
+      break;
+  default :
+      return ( atom_t){.label = ERROR,.stringData="In procedure <: Wrong type argument in position 2"};
+  }
+  if ( arg1 < arg2 )
+      return (atom_t){.label=BOOL,.boolData=true};
+
+  return (atom_t){.label=BOOL,.boolData=false};
+}
+
+ atom_t  _leq (list_t * args) 
+{
+  float arg1,arg2;
+  if (args == NULL || args->cdr.pointerData == NULL 
+       ||args->cdr.pointerData->cdr.pointerData != NULL)
+    return (atom_t) 
+    {
+    .label = ERROR,.stringData =
+	"ERROR: Syntax error: <= : atom -> atom -> bool"};
+  switch ( args->car.label) {
+  case INT:
+      arg1 = args->car.intData;
+      break;
+  case DOUBLE:
+      arg1 = args->car.doubleData;
+      break;
+  default :
+      return ( atom_t){.label = ERROR,.stringData="In procedure <=: Wrong type argument in position 1"};
+  }
+
+  switch ( args->cdr.pointerData->car.label) {
+  case INT:
+      arg2 = args->cdr.pointerData->car.intData;
+      break;
+  case DOUBLE:
+      arg2 = args->cdr.pointerData->car.doubleData;
+      break;
+  default :
+      return ( atom_t){.label = ERROR,.stringData="In procedure <=: Wrong type argument in position 2"};
+  }
+  if ( arg1 <= arg2 )
+      return (atom_t){.label=BOOL,.boolData=true};
+
+  return (atom_t){.label=BOOL,.boolData=false};
+}
+
  atom_t  _if (list_t * args) 
 {
   if (args == NULL || args->cdr.pointerData == NULL 

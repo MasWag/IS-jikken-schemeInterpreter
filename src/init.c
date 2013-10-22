@@ -49,5 +49,18 @@ init (void)
   setData ("=", (atom_t)
 	   {
 	   .label = SYSTEM_FUNCTION,.systemFunction = _equal});
+  setData (">", (atom_t)
+	   {
+	   .label = SYSTEM_FUNCTION,.systemFunction = _gt});
+  setData (">=", (atom_t)
+	   {
+	   .label = SYSTEM_FUNCTION,.systemFunction = _gtq});
+  setData ("<", (atom_t)
+	   {
+	   .label = SYSTEM_FUNCTION,.systemFunction = _le});
+  setData ("<=", (atom_t)
+	   {
+	   .label = SYSTEM_FUNCTION,.systemFunction = _leq});
+
   
 }

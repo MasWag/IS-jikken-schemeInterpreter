@@ -3,7 +3,7 @@
   @author Masaki Waga <tsugarutamenobu@gmail.com>
   @date 2013/10/13
   
-  @brief libraryだよはあと
+  @brief library縺�繧医����縺ゅ→
 */
 
 #ifndef LIBRARY_H
@@ -20,6 +20,10 @@ atom_t _car (list_t *);
 atom_t _cdr (list_t *);
 atom_t _quit (list_t *);
 atom_t _equal (list_t *);
+atom_t _gt (list_t *);
+atom_t _gtq (list_t *);
+atom_t _le (list_t *);
+atom_t _leq (list_t *);
 atom_t _if (list_t *);
 
 #endif
