@@ -29,7 +29,9 @@ getLocalData( char* label, dataList_t * in)
 	{
 	  if (strcmp (ptr->cdr->car.label, label) == 0)
 	    {
-	      return ptr->cdr->car.data;
+		atom_t ret = ptr->cdr->car.data;
+		ret.variableName = label;
+		return ret;
 	    }
 	}
     }
@@ -79,4 +81,17 @@ setLocalData (char *label, atom_t data,dataList_t *in)
   next->car.data = data;
   next->cdr = NULL;
   ptr->cdr = next;
+}
+
+void freeDataList(dataList_t * src)
+{
+  if ( src == NULL )
+    return;
+
+  if ( src->car.data.label == POINTER_OF_LIST && src->car.data.pointerData != NULL )
+    freeList( src->car.data.pointerData );
+  if ( src->cdr != NULL )
+    freeDataList( src->cdr );
+  
+  free ( src );
 }

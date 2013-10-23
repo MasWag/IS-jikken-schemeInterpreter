@@ -11,6 +11,14 @@
 #include "types.h"
 #include "utils.h"
 #include "library.h"
+
+static list_t * m_head;
+
+void setHead( list_t * head)
+{
+    m_head = head;
+}
+
   atom_t  _plus (list_t * args) 
 {
   if (args == NULL || args->cdr.pointerData == NULL 
@@ -260,16 +268,20 @@ _minus (list_t * args)
     .label = ERROR,.stringData =
 	"ERROR: Syntax error: if : bool -> expr -> expr -> atom"};
   if ( args->car.label == LAMBDA) {
-      atom_t tmp = _execute( args->car.pointerData->car,args->car.pointerData->cdr.pointerData );
+      atom_t tmp = _execute( m_head,args->car.pointerData->car,args->car.pointerData->cdr.pointerData );
       freeList(args->car.pointerData);
       args->car = tmp;
   }
   if ( args->car.label == BOOL && args->car.boolData == false) {
       if (args->cdr.pointerData->cdr.pointerData->car.label == LAMBDA || args->cdr.pointerData->cdr.pointerData->car.label == SYSTEM_FUNCTION || args->cdr.pointerData->cdr.pointerData->car.label == FUNCTION )
-	  return _execute(args->cdr.pointerData->cdr.pointerData->car.pointerData->car,args->cdr.pointerData->cdr.pointerData->car.pointerData->cdr.pointerData);
+	  return _execute(m_head,args->cdr.pointerData->cdr.pointerData->car.pointerData->car,args->cdr.pointerData->cdr.pointerData->car.pointerData->cdr.pointerData);
       return args->cdr.pointerData->cdr.pointerData->car;
   }
   if (args->cdr.pointerData->car.label == LAMBDA || args->cdr.pointerData->car.label == SYSTEM_FUNCTION || args->cdr.pointerData->car.label == FUNCTION )
-      return _execute(args->cdr.pointerData->car.pointerData->car,args->cdr.pointerData->car.pointerData->cdr.pointerData);
+      return _execute(m_head,args->cdr.pointerData->car.pointerData->car,args->cdr.pointerData->car.pointerData->cdr.pointerData);
   return args->cdr.pointerData->car;
 }
+
+
+
+
