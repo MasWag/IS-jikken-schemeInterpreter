@@ -190,7 +190,9 @@ atom_t _execute (list_t* head,atom_t functionAtom,list_t * args)
 	      free( t->car.pointerData);
 	      t->car = tmp;
 	    }
+	#ifndef NODISPLAY
 	displayList( *head );
+	#endif
 	return executeLambda(head,functionAtom,args);
     }
   else if (functionAtom.label == SYSTEM_FUNCTION)
@@ -206,7 +208,9 @@ atom_t _execute (list_t* head,atom_t functionAtom,list_t * args)
 	      t->car = tmp;
 	    }
       setHead(head);
+      #ifndef NODISPLAY
       displayList( *head );
+      #endif
       return functionAtom.systemFunction (args);
     }
   return (atom_t)
@@ -274,7 +278,7 @@ atom_t executeLambda(list_t* head,atom_t functionAtom,list_t * args)
   
   for ( list_t *t = args; t != NULL; t = t->cdr.pointerData ) {
       if ( argsNow == NULL ) {
-	  freeDataList( dataHead->cdr );
+	  freeDataList( dataHead ,functionAtom.lambdaData.dataList);
 	  return mkErrorMes( "Error : too much args!! " );
       }
       puts(argsNow->car.stringData);
@@ -284,8 +288,9 @@ atom_t executeLambda(list_t* head,atom_t functionAtom,list_t * args)
       argsNow = argsNow->cdr.pointerData;
   }
   free ( dataNow->cdr->cdr );
-  dataNow->cdr = functionAtom.lambdaData.dataList;
-  free ( dataHead_ );
+  dataNow->cdr = functionAtom.lambdaData.dataList;  
+  /* if ( dataHead_ != NULL ) */
+  /* free ( dataHead_ ); */
   // ここまでlocal variableのlistの処理
   
   if ( argsNow != NULL )
@@ -294,9 +299,13 @@ atom_t executeLambda(list_t* head,atom_t functionAtom,list_t * args)
   // ここからlambda式のcopyと変数展開
   copyLambda((atom_t){.label=LAMBDA,.pointerData=functionAtom.lambdaData.expression}, &newFunctionAtom,dataHead);
   
+  #ifndef NODISPLAY
   printf("called function :");
   displayListWithoutLF(*(functionAtom.lambdaData.expression));
   displayList(*args);
-
-  return _execute (newFunctionAtom->pointerData,newFunctionAtom->pointerData->car,newFunctionAtom->pointerData->cdr.pointerData);
+  #endif
+  atom_t ret = _execute (newFunctionAtom->pointerData,newFunctionAtom->pointerData->car,newFunctionAtom->pointerData->cdr.pointerData);
+  freeDataList(dataHead,functionAtom.lambdaData.dataList);
+  freeList(newFunctionAtom->pointerData);
+  return ret;
 }
