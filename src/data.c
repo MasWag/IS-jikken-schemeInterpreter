@@ -83,15 +83,15 @@ setLocalData (char *label, atom_t data,dataList_t *in)
   ptr->cdr = next;
 }
 
-void freeDataList(dataList_t * src)
+void freeDataList(dataList_t * src,dataList_t* end)
 {
   if ( src == NULL )
     return;
 
   if ( src->car.data.label == POINTER_OF_LIST && src->car.data.pointerData != NULL )
     freeList( src->car.data.pointerData );
-  if ( src->cdr != NULL )
-    freeDataList( src->cdr );
+  if ( src->cdr != NULL && src->cdr != end)
+      freeDataList( src->cdr ,end);
   
   free ( src );
 }
