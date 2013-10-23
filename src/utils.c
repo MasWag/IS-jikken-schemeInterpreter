@@ -9,6 +9,8 @@
 #include "utils.h"
 #include "library.h"
 
+extern void setHead(list_t*);
+
 //! error処理をやってくれるmalloc
 void *
 mallocWithErr (size_t size)
@@ -55,7 +57,8 @@ displayAtomWithoutLF (atom_t in)
       printf ("%f", in.doubleData);
       break;
     case SYSTEM_FUNCTION:
-      printf ("This is system function");
+	printf("%s", in.variableName);
+      /* printf ("This is system function"); */
       break;
     case STRING:
       printf ("\"%s\"", in.stringData);
@@ -70,10 +73,12 @@ displayAtomWithoutLF (atom_t in)
       printf ("#\\%c", in.charData);
       break;
     case UNDEFINED_VARIABLE:
-      printf ("error: undefined variable %s ", in.stringData);
+	printf("%s", in.variableName);
+      /* printf ("error: undefined variable %s ", in.stringData); */
       break;
     case FUNCTION:
-      printf("LAMBDA");
+	displayListWithoutLF( *(in.lambdaData.expression));
+      /* printf("LAMBDA"); */
       break;
     default:
       if (in.pointerData == NULL)
@@ -95,7 +100,7 @@ displayListWithoutBraces (list_t list)
   if (list.car.label != POINTER_OF_LIST && list.car.label != LAMBDA)
     displayAtomWithoutLF (list.car);
   else
-    displayList (*(list.car.pointerData));
+    displayListWithoutLF (*(list.car.pointerData));
   if (list.cdr.pointerData == NULL)
     return;
   if (list.cdr.label != POINTER_OF_LIST && list.cdr.label != LAMBDA)
@@ -144,25 +149,26 @@ _define (list_t * args)
 atom_t
 _lambda (list_t * args)
 {
-  dataList_t *dataList;
+  /* dataList_t *dataList; */
   if (args == NULL || args->cdr.pointerData == NULL
       || args->cdr.pointerData->cdr.pointerData != NULL || args->car.label != LAMBDA || args->cdr.pointerData->car.label != LAMBDA)
     return (atom_t)
     {
     .label = ERROR,.stringData =
 	"ERROR: Syntax error: lambda : args -> function -> atom"};
-  dataList = mallocWithErr ( sizeof( dataList_t ) );
+  /* dataList = mallocWithErr ( sizeof( dataList_t ) ); */
 
   return (atom_t){.label=FUNCTION,.lambdaData={.args=args->car.pointerData,.expression=args->cdr.pointerData->car.pointerData}};
 }
 
-atom_t _execute (atom_t functionAtom,const list_t * args)
+atom_t _execute (list_t* head,atom_t functionAtom,list_t * args)
 {
+
   if (functionAtom.label == ERROR)
     return functionAtom;
   if (functionAtom.label == LAMBDA)
     functionAtom =
-      _execute (functionAtom.pointerData->car,
+	_execute (head,functionAtom.pointerData->car,
 		functionAtom.pointerData->cdr.pointerData);
   else if (functionAtom.label != SYSTEM_FUNCTION && functionAtom.label != FUNCTION)
     {
@@ -179,12 +185,13 @@ atom_t _execute (atom_t functionAtom,const list_t * args)
 	    if (t->car.label == LAMBDA)
 	    {
 	      atom_t tmp =
-		_execute (t->car.pointerData->car,
+		  _execute (head,t->car.pointerData->car,
 			  t->car.pointerData->cdr.pointerData);
 	      free( t->car.pointerData);
 	      t->car = tmp;
 	    }
-	return executeLambda(functionAtom,args);
+	displayList( *head );
+	return executeLambda(head,functionAtom,args);
     }
   else if (functionAtom.label == SYSTEM_FUNCTION)
     {
@@ -193,11 +200,13 @@ atom_t _execute (atom_t functionAtom,const list_t * args)
 	  if (t->car.label == LAMBDA)
 	    {
 	      atom_t tmp =
-		_execute (t->car.pointerData->car,
+		  _execute (head,t->car.pointerData->car,
 			  t->car.pointerData->cdr.pointerData);
 	      free( t->car.pointerData);
 	      t->car = tmp;
 	    }
+      setHead(head);
+      displayList( *head );
       return functionAtom.systemFunction (args);
     }
   return (atom_t)
@@ -245,7 +254,7 @@ void copyLambda(atom_t srcAtom,atom_t** destAtom ,dataList_t* dataList)
     }    
 }
 
-atom_t executeLambda(atom_t functionAtom,const list_t * args)
+atom_t executeLambda(list_t* head,atom_t functionAtom,list_t * args)
 {
 //! freeするときはdataHeadからfunctionAtom.lambdaData.dataListの直前までをfreeする
   dataList_t* dataHead;
@@ -265,10 +274,10 @@ atom_t executeLambda(atom_t functionAtom,const list_t * args)
   
   for ( list_t *t = args; t != NULL; t = t->cdr.pointerData ) {
       if ( argsNow == NULL ) {
-	  freeList( dataHead->cdr );
+	  freeDataList( dataHead->cdr );
 	  return mkErrorMes( "Error : too much args!! " );
       }
-      
+      puts(argsNow->car.stringData);
       dataNow->cdr->car = (data_t){.label=argsNow->car.stringData,.data=t->car};
       dataNow->cdr->cdr = mallocWithErr( sizeof(dataList_t) );
       dataNow = dataNow->cdr;
@@ -283,7 +292,11 @@ atom_t executeLambda(atom_t functionAtom,const list_t * args)
       return (atom_t){.label=FUNCTION,.lambdaData={.args=argsNow,.expression=functionAtom.lambdaData.expression,.dataList=dataHead}};
   
   // ここからlambda式のcopyと変数展開
-  copyLambda((atom_t){.label=LAMBDA,.pointerData=functionAtom.lambdaData.expression},&newFunctionAtom,dataHead);
+  copyLambda((atom_t){.label=LAMBDA,.pointerData=functionAtom.lambdaData.expression}, &newFunctionAtom,dataHead);
+  
+  printf("called function :");
+  displayListWithoutLF(*(functionAtom.lambdaData.expression));
+  displayList(*args);
 
-  return _execute (newFunctionAtom->pointerData->car,newFunctionAtom->pointerData->cdr.pointerData);
+  return _execute (newFunctionAtom->pointerData,newFunctionAtom->pointerData->car,newFunctionAtom->pointerData->cdr.pointerData);
 }

@@ -40,4 +40,6 @@ void setLocalData (char *, atom_t, dataList_t *);
 //! dataを格納する.とりあえず破壊的代入もできるようにする
 void setData (char *, atom_t);
 
+void freeDataList(dataList_t*);
+
 #endif

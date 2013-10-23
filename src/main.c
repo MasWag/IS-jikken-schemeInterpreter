@@ -36,7 +36,7 @@ main ()
 	    displayAtom (atom);
 	  else
 	    {
-	      atom_t ret = _execute (atom.pointerData->car,
+	      atom_t ret = _execute (atom.pointerData,atom.pointerData->car,
 				     atom.pointerData->cdr.pointerData);
 	      switch ( ret.label )
 		{
