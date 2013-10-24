@@ -13,7 +13,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include "types.h"
-#include "utils.h"
 
 typedef struct
 {
@@ -28,11 +27,10 @@ typedef struct _dataList_t
 } dataList_t;
 
 
-//! dataを格納しているlistから要素を取り出す
-atom_t getLocalData (char *, dataList_t *);
+dataList_t * getGlobalDataListHead(void);
 
 //! dataを格納しているlistから要素を取り出す
-atom_t getData (char *);
+atom_t getData (char *, dataList_t *);
 
 //! dataを格納する.とりあえず破壊的代入もできるようにする
 void setLocalData (char *, atom_t, dataList_t *);

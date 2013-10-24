@@ -7,6 +7,7 @@
 */
 
 #include "data.h"
+#include "utils.h"
 
 static dataList_t listHead = {
   .car.label = "define",
@@ -16,9 +17,12 @@ static dataList_t listHead = {
   .cdr = NULL
 };
 
+dataList_t * getGlobalDataListHead(void){return &listHead;}
+
+
 //! dataを格納しているlistから要素を取り出す
 atom_t 
-getLocalData( char* label, dataList_t * in)
+getData( char* label, dataList_t * in)
 {
   dataList_t *ptr = in;
   if (strcmp (ptr->car.label, label) == 0)
@@ -38,13 +42,6 @@ getLocalData( char* label, dataList_t * in)
   return (atom_t)
   {
       .label = UNDEFINED_VARIABLE,.stringData = label,.variableName=label};
-}
-
-//! dataを格納しているlistから要素を取り出す
-atom_t
-getData (char *label)
-{
-  return getLocalData( label , &listHead);
 }
 
 //! dataを格納する.とりあえず破壊的代入もできるようにする

@@ -222,7 +222,7 @@ parseOtherAtomWithFirseChar (char ch)
       free (str);
     }
   else
-    ret = getData (str);
+      ret = getData (str,getGlobalDataListHead());
 
 
   return ret;

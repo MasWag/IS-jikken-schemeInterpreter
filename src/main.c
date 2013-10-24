@@ -37,7 +37,7 @@ main ()
 	  else
 	    {
 	      atom_t ret = _execute (atom.pointerData,atom.pointerData->car,
-				     atom.pointerData->cdr.pointerData);
+				     atom.pointerData->cdr.pointerData,getGlobalDataListHead());
 	      switch ( ret.label )
 		{
 		case POINTER_OF_LIST:

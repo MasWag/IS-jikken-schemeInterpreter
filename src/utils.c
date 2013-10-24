@@ -10,6 +10,7 @@
 #include "library.h"
 
 extern void setHead(list_t*);
+extern void setDataListHead(dataList_t*);
 
 //! error処理をやってくれるmalloc
 void *
@@ -146,22 +147,7 @@ _define (list_t * args)
   return args->cdr.pointerData->car;
 }
 
-atom_t
-_lambda (list_t * args)
-{
-  /* dataList_t *dataList; */
-  if (args == NULL || args->cdr.pointerData == NULL
-      || args->cdr.pointerData->cdr.pointerData != NULL || args->car.label != LAMBDA || args->cdr.pointerData->car.label != LAMBDA)
-    return (atom_t)
-    {
-    .label = ERROR,.stringData =
-	"ERROR: Syntax error: lambda : args -> function -> atom"};
-  /* dataList = mallocWithErr ( sizeof( dataList_t ) ); */
-
-  return (atom_t){.label=FUNCTION,.lambdaData={.args=args->car.pointerData,.expression=args->cdr.pointerData->car.pointerData}};
-}
-
-atom_t _execute (list_t* head,atom_t functionAtom,list_t * args)
+atom_t _execute (list_t* head,atom_t functionAtom,list_t * args,dataList_t* dataListHead)
 {
 
   if (functionAtom.label == ERROR)
@@ -169,7 +155,7 @@ atom_t _execute (list_t* head,atom_t functionAtom,list_t * args)
   if (functionAtom.label == LAMBDA)
     functionAtom =
 	_execute (head,functionAtom.pointerData->car,
-		functionAtom.pointerData->cdr.pointerData);
+		  functionAtom.pointerData->cdr.pointerData,dataListHead);
   else if (functionAtom.label != SYSTEM_FUNCTION && functionAtom.label != FUNCTION)
     {
       printf ("error: ");
@@ -186,14 +172,14 @@ atom_t _execute (list_t* head,atom_t functionAtom,list_t * args)
 	    {
 	      atom_t tmp =
 		  _execute (head,t->car.pointerData->car,
-			  t->car.pointerData->cdr.pointerData);
+			    t->car.pointerData->cdr.pointerData,dataListHead);
 	      free( t->car.pointerData);
 	      t->car = tmp;
 	    }
 	#ifndef NODISPLAY
 	displayList( *head );
 	#endif
-	return executeLambda(head,functionAtom,args);
+	return executeLambda(head,functionAtom,args,dataListHead);
     }
   else if (functionAtom.label == SYSTEM_FUNCTION)
     {
@@ -203,11 +189,12 @@ atom_t _execute (list_t* head,atom_t functionAtom,list_t * args)
 	    {
 	      atom_t tmp =
 		  _execute (head,t->car.pointerData->car,
-			  t->car.pointerData->cdr.pointerData);
+			    t->car.pointerData->cdr.pointerData,dataListHead);
 	      free( t->car.pointerData);
 	      t->car = tmp;
 	    }
       setHead(head);
+      setDataListHead(dataListHead);
       #ifndef NODISPLAY
       displayList( *head );
       #endif
@@ -249,16 +236,14 @@ void copyLambda(atom_t srcAtom,atom_t** destAtom ,dataList_t* dataList)
 	}
 	break;
     case UNDEFINED_VARIABLE:
-	**destAtom = getLocalData((*destAtom)->variableName,dataList);
-	if ((*destAtom)->label == UNDEFINED_VARIABLE) 
-	    **destAtom = getData((*destAtom)->variableName);
+	**destAtom = getData((*destAtom)->variableName,dataList);
 	break;
     default:
 	break;
     }    
 }
 
-atom_t executeLambda(list_t* head,atom_t functionAtom,list_t * args)
+atom_t executeLambda(list_t* head,atom_t functionAtom,list_t * args,dataList_t* dataListHead)
 {
 //! freeするときはdataHeadからfunctionAtom.lambdaData.dataListの直前までをfreeする
   dataList_t* dataHead;
@@ -281,18 +266,17 @@ atom_t executeLambda(list_t* head,atom_t functionAtom,list_t * args)
 	  freeDataList( dataHead ,functionAtom.lambdaData.dataList);
 	  return mkErrorMes( "Error : too much args!! " );
       }
-      puts(argsNow->car.stringData);
       dataNow->cdr->car = (data_t){.label=argsNow->car.stringData,.data=t->car};
       dataNow->cdr->cdr = mallocWithErr( sizeof(dataList_t) );
       dataNow = dataNow->cdr;
       argsNow = argsNow->cdr.pointerData;
   }
-  free ( dataNow->cdr->cdr );
+  free ( dataNow->cdr );
   dataNow->cdr = functionAtom.lambdaData.dataList;  
   /* if ( dataHead_ != NULL ) */
   /* free ( dataHead_ ); */
   // ここまでlocal variableのlistの処理
-  
+
   if ( argsNow != NULL )
       return (atom_t){.label=FUNCTION,.lambdaData={.args=argsNow,.expression=functionAtom.lambdaData.expression,.dataList=dataHead}};
   
@@ -304,7 +288,7 @@ atom_t executeLambda(list_t* head,atom_t functionAtom,list_t * args)
   displayListWithoutLF(*(functionAtom.lambdaData.expression));
   displayList(*args);
   #endif
-  atom_t ret = _execute (newFunctionAtom->pointerData,newFunctionAtom->pointerData->car,newFunctionAtom->pointerData->cdr.pointerData);
+  atom_t ret = _execute (newFunctionAtom->pointerData,newFunctionAtom->pointerData->car,newFunctionAtom->pointerData->cdr.pointerData,dataListHead);
   freeDataList(dataHead,functionAtom.lambdaData.dataList);
   freeList(newFunctionAtom->pointerData);
   return ret;

@@ -6,6 +6,7 @@
   @brief 初期化処理をおこなう
 */
 
+#include "utils.h"
 #include "data.h"
 #include "types.h"
 #include "library.h"
