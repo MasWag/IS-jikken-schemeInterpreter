@@ -152,11 +152,13 @@ atom_t _execute (list_t* head,atom_t functionAtom,list_t * args,dataList_t* data
 
   if (functionAtom.label == ERROR)
     return functionAtom;
-  if (functionAtom.label == LAMBDA)
+  if (functionAtom.label == LAMBDA) {
     functionAtom =
 	_execute (head,functionAtom.pointerData->car,
 		  functionAtom.pointerData->cdr.pointerData,dataListHead);
-  else if (functionAtom.label != SYSTEM_FUNCTION && functionAtom.label != FUNCTION)
+    printf("%d\n",functionAtom.label);
+  }
+  if (functionAtom.label != SYSTEM_FUNCTION && functionAtom.label != FUNCTION)
     {
       printf ("error: ");
       displayAtomWithoutLF (functionAtom);
@@ -167,6 +169,7 @@ atom_t _execute (list_t* head,atom_t functionAtom,list_t * args,dataList_t* data
     }
   else if (functionAtom.label == FUNCTION)
     {
+	puts("HERE1");
 	for (list_t * t = args; t != NULL; t = t->cdr.pointerData)
 	    if (t->car.label == LAMBDA)
 	    {
@@ -245,6 +248,7 @@ void copyLambda(atom_t srcAtom,atom_t** destAtom ,dataList_t* dataList)
 
 atom_t executeLambda(list_t* head,atom_t functionAtom,list_t * args,dataList_t* dataListHead)
 {
+    puts("HERE");
 //! freeするときはdataHeadからfunctionAtom.lambdaData.dataListの直前までをfreeする
   dataList_t* dataHead;
   dataList_t* dataNow;
