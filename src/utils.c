@@ -11,6 +11,8 @@
 
 extern void setHead(list_t*);
 extern void setDataListHead(dataList_t*);
+static bool m_isDisplayUndefVariable;
+void setDisplayUndefVariableMode(bool in){ m_isDisplayUndefVariable = in;}
 
 //! error処理をやってくれるmalloc
 void *
@@ -48,7 +50,7 @@ reallocWithErr (void *ptr, size_t size)
 void
 displayAtomWithoutLF (atom_t in)
 {
-
+  bool tmp;
   switch (in.label)
     {
     case INT:
@@ -74,11 +76,16 @@ displayAtomWithoutLF (atom_t in)
       printf ("#\\%c", in.charData);
       break;
     case UNDEFINED_VARIABLE:
-	printf("%s", in.variableName);
-      /* printf ("error: undefined variable %s ", in.stringData); */
+	if ( m_isDisplayUndefVariable )
+	    printf ("error: undefined variable %s ", in.stringData);
+	else 
+	    printf("%s", in.variableName);
       break;
     case FUNCTION:
+	tmp = m_isDisplayUndefVariable;
+	setDisplayUndefVariableMode(false);
 	displayListWithoutLF( *(in.lambdaData.expression));
+	setDisplayUndefVariableMode(tmp);
       /* printf("LAMBDA"); */
       break;
     default:
@@ -156,9 +163,12 @@ atom_t _execute (list_t* head,atom_t functionAtom,list_t * args,dataList_t* data
     functionAtom =
 	_execute (head,functionAtom.pointerData->car,
 		  functionAtom.pointerData->cdr.pointerData,dataListHead);
-    printf("%d\n",functionAtom.label);
   }
-  if (functionAtom.label != SYSTEM_FUNCTION && functionAtom.label != FUNCTION)
+  if (functionAtom.label == ERROR || functionAtom.label == UNDEFINED_VARIABLE) {
+      puts("HERE");
+      return (atom_t){.label=ERROR,.stringData=functionAtom.stringData };
+  }
+  else if (functionAtom.label != SYSTEM_FUNCTION && functionAtom.label != FUNCTION)
     {
       printf ("error: ");
       displayAtomWithoutLF (functionAtom);
@@ -169,7 +179,6 @@ atom_t _execute (list_t* head,atom_t functionAtom,list_t * args,dataList_t* data
     }
   else if (functionAtom.label == FUNCTION)
     {
-	puts("HERE1");
 	for (list_t * t = args; t != NULL; t = t->cdr.pointerData)
 	    if (t->car.label == LAMBDA)
 	    {
@@ -205,7 +214,7 @@ atom_t _execute (list_t* head,atom_t functionAtom,list_t * args,dataList_t* data
     }
   return (atom_t)
   {
-  .label = ERROR};
+      .label = ERROR,.stringData="Unknown error"};
 }
 
 void freeList(list_t * src)
@@ -248,7 +257,6 @@ void copyLambda(atom_t srcAtom,atom_t** destAtom ,dataList_t* dataList)
 
 atom_t executeLambda(list_t* head,atom_t functionAtom,list_t * args,dataList_t* dataListHead)
 {
-    puts("HERE");
 //! freeするときはdataHeadからfunctionAtom.lambdaData.dataListの直前までをfreeする
   dataList_t* dataHead;
   dataList_t* dataNow;

@@ -13,7 +13,8 @@ static dataList_t listHead = {
   .car.label = "define",
   .car.data = {
 	       .label = SYSTEM_FUNCTION,
-	       .systemFunction = _define},
+	       .systemFunction = _define,
+	       .variableName = "define"},
   .cdr = NULL
 };
 

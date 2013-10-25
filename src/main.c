@@ -11,6 +11,7 @@
 #include "utils.h"
 
 extern void init (void);
+extern void setDisplayUndefVariableMode(bool in);
 
 int
 main ()
@@ -32,12 +33,16 @@ main ()
       else
 	{
 	  atom_t atom = parseAtomWithFirstChar (ch);
-	  if (atom.label != LAMBDA)
+	  if (atom.label != LAMBDA) {
+	    setDisplayUndefVariableMode(true);
 	    displayAtom (atom);
+	    setDisplayUndefVariableMode(false);
+	  }
 	  else
 	    {
 	      atom_t ret = _execute (atom.pointerData,atom.pointerData->car,
 				     atom.pointerData->cdr.pointerData,getGlobalDataListHead());
+	      setDisplayUndefVariableMode(true);
 	      switch ( ret.label )
 		{
 		case POINTER_OF_LIST:
@@ -52,6 +57,7 @@ main ()
 		  displayAtom (ret);
 		  break;
 	      }
+	      setDisplayUndefVariableMode(false);
 	    }
 
 	}
