@@ -9,10 +9,22 @@
 #include "utils.h"
 #include "library.h"
 
+#define freeSmartPointerState( A ) int _a_;for(_a_ = 0;_a_ <= (A).headNow;_a_++) free( (A).smartPointerHead[_a_] );free( (A).smartPointerHead )
+
 extern void setHead(list_t*);
 extern void setDataListHead(dataList_t*);
 static bool m_isDisplayUndefVariable;
 void setDisplayUndefVariableMode(bool in){ m_isDisplayUndefVariable = in;}
+
+typedef struct {
+    void** smartPointerHead;
+    int headMax;
+    int headNow;
+    int buffNow;
+    int buffMax;
+} smartPointerState;
+
+static smartPointerState* m_nowSmartPointerState;
 
 //! error処理をやってくれるmalloc
 void *
@@ -44,6 +56,39 @@ reallocWithErr (void *ptr, size_t size)
       exit (-1);
     }
   return tmp;
+}
+
+void * smartMalloc( size_t size )
+{
+#define BUFF_MAX m_nowSmartPointerState->buffMax
+#define BUFF_NOW m_nowSmartPointerState->buffNow
+#define SMART_POINTER_HEAD m_nowSmartPointerState->smartPointerHead
+#define HEAD_NOW m_nowSmartPointerState->headNow
+#define HEAD_MAX m_nowSmartPointerState->headMax
+    /* if ( m_nowSmartPointerState->smartPointerHead == NULL ) */
+    /* 	m_nowSmartPointerState->smartPointerHead = malloc( 512 ); */
+    /* if ( m_nowSmartPointerState->buffMax - m_nowSmartPointerState->buffNow < size ) { */
+    /* 	m_nowSmartPointerState->buffMax += 512; */
+    /* 	m_nowSmartPointerState->smartPointerHead = realloc( m_nowSmartPointerState->smartPointerHead, m_nowSmartPointerState->buffMax ); */
+    /* } */
+
+    const int headUnit = 512;
+    if ( BUFF_MAX - BUFF_NOW < size || SMART_POINTER_HEAD == NULL) {
+    	HEAD_NOW++;
+    	BUFF_NOW = 0;
+    	if( HEAD_MAX < HEAD_NOW ) {
+    	    HEAD_MAX += headUnit;
+    	    if ( SMART_POINTER_HEAD == NULL )
+    		SMART_POINTER_HEAD = mallocWithErr ( sizeof(void*) * headUnit);
+    	    else
+    		SMART_POINTER_HEAD = reallocWithErr ( SMART_POINTER_HEAD,sizeof(void*) * headUnit);
+    	}
+    	SMART_POINTER_HEAD[HEAD_NOW] = mallocWithErr( BUFF_MAX );
+    }
+    BUFF_NOW += size;
+    if ( SMART_POINTER_HEAD == NULL )
+    	abort();
+    return SMART_POINTER_HEAD[HEAD_NOW]+ BUFF_NOW - size;
 }
 
 //! atomのdisplay関数
@@ -165,7 +210,6 @@ atom_t _execute (list_t* head,atom_t functionAtom,list_t * args,dataList_t* data
 		  functionAtom.pointerData->cdr.pointerData,dataListHead);
   }
   if (functionAtom.label == ERROR || functionAtom.label == UNDEFINED_VARIABLE) {
-      puts("HERE");
       return (atom_t){.label=ERROR,.stringData=functionAtom.stringData };
   }
   else if (functionAtom.label != SYSTEM_FUNCTION && functionAtom.label != FUNCTION)
@@ -185,7 +229,7 @@ atom_t _execute (list_t* head,atom_t functionAtom,list_t * args,dataList_t* data
 	      atom_t tmp =
 		  _execute (head,t->car.pointerData->car,
 			    t->car.pointerData->cdr.pointerData,dataListHead);
-	      free( t->car.pointerData);
+	      /* free( t->car.pointerData); */
 	      t->car = tmp;
 	    }
 	#ifndef NODISPLAY
@@ -202,7 +246,7 @@ atom_t _execute (list_t* head,atom_t functionAtom,list_t * args,dataList_t* data
 	      atom_t tmp =
 		  _execute (head,t->car.pointerData->car,
 			    t->car.pointerData->cdr.pointerData,dataListHead);
-	      free( t->car.pointerData);
+	      /* free( t->car.pointerData); */
 	      t->car = tmp;
 	    }
       setHead(head);
@@ -232,13 +276,13 @@ void freeList(list_t * src)
 
 void copyLambda(atom_t srcAtom,atom_t** destAtom ,dataList_t* dataList)
 {
-    *destAtom = mallocWithErr( sizeof( atom_t ) );
+    *destAtom = smartMalloc( sizeof( atom_t ) );
     memcpy(*destAtom,&srcAtom,sizeof ( atom_t ) );
-    switch ( srcAtom.label ) {
+    switch ( (*destAtom)->label ) {
     case POINTER_OF_LIST:
     case LAMBDA:
 	if ( srcAtom.pointerData != NULL ) {
-	    (*destAtom)->pointerData = mallocWithErr( sizeof(list_t) );
+	    (*destAtom)->pointerData = smartMalloc( sizeof(list_t) );
 	    atom_t * car = &((*destAtom)->pointerData->car);
 	    atom_t * cdr = &((*destAtom)->pointerData->cdr);
 	    copyLambda(srcAtom.pointerData->car,&car,dataList);
@@ -258,6 +302,7 @@ void copyLambda(atom_t srcAtom,atom_t** destAtom ,dataList_t* dataList)
 atom_t executeLambda(list_t* head,atom_t functionAtom,list_t * args,dataList_t* dataListHead)
 {
 //! freeするときはdataHeadからfunctionAtom.lambdaData.dataListの直前までをfreeする
+  smartPointerState m_smartPointerState;
   dataList_t* dataHead;
   dataList_t* dataNow;
   dataList_t* dataHead_;
@@ -291,10 +336,15 @@ atom_t executeLambda(list_t* head,atom_t functionAtom,list_t * args,dataList_t* 
 
   if ( argsNow != NULL )
       return (atom_t){.label=FUNCTION,.lambdaData={.args=argsNow,.expression=functionAtom.lambdaData.expression,.dataList=dataHead}};
-  
+
+  m_smartPointerState.headMax = -1;
+  m_smartPointerState.headNow = -1;
+  m_smartPointerState.buffNow = 0;
+  m_smartPointerState.buffMax = 512;
+  m_smartPointerState.smartPointerHead = NULL;
+  m_nowSmartPointerState = &m_smartPointerState;
   // ここからlambda式のcopyと変数展開
   copyLambda((atom_t){.label=LAMBDA,.pointerData=functionAtom.lambdaData.expression}, &newFunctionAtom,dataHead);
-  
   #ifndef NODISPLAY
   printf("called function :");
   displayListWithoutLF(*(functionAtom.lambdaData.expression));
@@ -302,6 +352,7 @@ atom_t executeLambda(list_t* head,atom_t functionAtom,list_t * args,dataList_t* 
   #endif
   atom_t ret = _execute (newFunctionAtom->pointerData,newFunctionAtom->pointerData->car,newFunctionAtom->pointerData->cdr.pointerData,dataListHead);
   freeDataList(dataHead,functionAtom.lambdaData.dataList);
-  freeList(newFunctionAtom->pointerData);
+  /* freeList(newFunctionAtom->pointerData); */
+  freeSmartPointerState ( m_smartPointerState );
   return ret;
 }

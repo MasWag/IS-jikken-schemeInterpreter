@@ -392,7 +392,7 @@ atom_t  _if (list_t * args)
 	"ERROR: Syntax error: if : bool -> expr -> expr -> atom"};
   if ( ARG1.label == LAMBDA) {
       atom_t tmp = _execute( m_head,ARG1.pointerData->car,ARG1.pointerData->cdr.pointerData ,dataListHead);
-      freeList(ARG1.pointerData);
+      /* freeList(ARG1.pointerData); */
       ARG1 = tmp;
   }
   if ( ARG1.label == BOOL && ARG1.boolData == false) {

@@ -2,7 +2,7 @@ CC = gcc
 SRCS = $(wildcard *.c)
 OBJS = $(SRCS:.c=.o)
 
-CFLAGS = -std=gnu11 -Wall -g #-D NODISPLAY
+CFLAGS = -std=gnu11 -Wall -g -D NODISPLAY -O3
 
 all: scheme
 
