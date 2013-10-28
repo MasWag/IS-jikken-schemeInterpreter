@@ -276,19 +276,21 @@ void freeList(list_t * src)
 
 void copyLambda(atom_t srcAtom,atom_t** destAtom ,dataList_t* dataList)
 {
+    atom_t *p_dest;
     *destAtom = smartMalloc( sizeof( atom_t ) );
-    memcpy(*destAtom,&srcAtom,sizeof ( atom_t ) );
-    switch ( (*destAtom)->label ) {
+    p_dest = *destAtom;
+    *p_dest = srcAtom;
+    switch ( p_dest->label ) {
     case POINTER_OF_LIST:
     case LAMBDA:
 	if ( srcAtom.pointerData != NULL ) {
-	    (*destAtom)->pointerData = smartMalloc( sizeof(list_t) );
-	    atom_t * car = &((*destAtom)->pointerData->car);
-	    atom_t * cdr = &((*destAtom)->pointerData->cdr);
+	    p_dest->pointerData = smartMalloc( sizeof(list_t) );
+	    atom_t * car = &(p_dest->pointerData->car);
+	    atom_t * cdr = &(p_dest->pointerData->cdr);
 	    copyLambda(srcAtom.pointerData->car,&car,dataList);
-	    (*destAtom)->pointerData->car = *car;
+	    p_dest->pointerData->car = *car;
 	    copyLambda(srcAtom.pointerData->cdr,&cdr,dataList);
-	    (*destAtom)->pointerData->cdr = *cdr;
+	    dest->pointerData->cdr = *cdr;
 	}
 	break;
     case UNDEFINED_VARIABLE:
