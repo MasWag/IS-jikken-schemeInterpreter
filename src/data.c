@@ -1,4 +1,4 @@
-/*!
+﻿/*!
   @file data.c
   @author Masaki Waga <tsugarutamenobu@gmail.com>
   @date 2013/10/10

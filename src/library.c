@@ -1,10 +1,10 @@
-/*!
+﻿/*!
   @file library.c
   @author Masaki Waga <tsugarutamenobu@gmail.com>
   @date 2013/10/13
   
-  @brief library縺�繧医����縺ゅ→
-*/  
+  @brief libraryだよはあと
+*/
   
 #include <stdio.h>
 #include <stdlib.h>
@@ -43,7 +43,42 @@ _lambda (list_t * args)
   return (atom_t){.label=FUNCTION,.lambdaData={.args=ARG1.pointerData,.expression=ARG2.pointerData,.dataList = dataListHead}};
 }
 
-  atom_t  _plus (list_t * args) 
+#define OPERATOR(OPR,STR)  IFNOTARGS2ERROR ("ERROR: Syntax error: "STR" : num -> num -> num" ) \
+  CHECKERROR2;\
+  if (ARG1.label == INT && ARG2.label == INT)\
+    {\
+      return (atom_t)\
+      {\
+      .label = INT,.intData =\
+	  (ARG1.intData OPR ARG2.intData)};\
+    }\
+  else if (ARG1.label == INT\
+	   && ARG2.label == DOUBLE)\
+    {\
+      return (atom_t)\
+      {\
+      .label = DOUBLE,.doubleData =\
+	  (ARG1.intData OPR ARG2.doubleData)};\
+    }\
+  else \
+    if (ARG1.label == DOUBLE && ARG2.label == INT)\
+    {\
+      return (atom_t)\
+      {\
+      .label = DOUBLE,.doubleData =\
+	  (ARG1.doubleData OPR ARG2.intData)};\
+    }\
+    else if (ARG1.label == DOUBLE && ARG2.label == DOUBLE)\
+	return (atom_t)\
+	{\
+	    .label = DOUBLE,.doubleData =\
+		(ARG1.doubleData OPR ARG2.doubleData)};\
+  return (atom_t)\
+  {\
+      .label = ERROR,.stringData =\
+      "error : argument of "STR" must be num"}
+
+atom_t  _plus (list_t * args) 
 {
   IFNOTARGS2ERROR ("ERROR: Syntax error: + : num -> num -> num" )
   CHECKERROR2;
@@ -71,10 +106,10 @@ _lambda (list_t * args)
 	  (ARG1.doubleData + ARG2.intData)};
     }
     else if (ARG1.label == DOUBLE && ARG2.label == DOUBLE)
-  return (atom_t)
-  {
-  .label = DOUBLE,.doubleData =
-      (ARG1.doubleData + ARG2.doubleData)};
+	return (atom_t)
+	{
+	    .label = DOUBLE,.doubleData =
+		(ARG1.doubleData + ARG2.doubleData)};
   return (atom_t)
   {
       .label = ERROR,.stringData =
@@ -150,7 +185,7 @@ _minus (list_t * args)
       (ARG1.doubleData * ARG2.doubleData)};
 }
 
- atom_t  _div (list_t * args) 
+atom_t  _div (list_t * args) 
 {
   IFNOTARGS2ERROR ("ERROR: Syntax error: / : num -> num -> num" )
   CHECKERROR2;
@@ -184,7 +219,24 @@ _minus (list_t * args)
       (ARG1.doubleData / ARG2.doubleData)};
 }
 
- atom_t  _cons (list_t * args) 
+atom_t  _modulo (list_t * args) 
+{
+  IFNOTARGS2ERROR ("ERROR: Syntax error: modulo : num -> num -> num" )
+  CHECKERROR2;
+  if (ARG1.label == INT && ARG2.label == INT)
+    {
+      return (atom_t) 
+      {
+      .label = INT,.intData = 
+	  (ARG1.intData % ARG2.intData)};
+    }
+  return (atom_t)
+  {
+      .label = ERROR,.stringData =
+      "error : argument of modulo must be int"};
+}
+
+atom_t  _cons (list_t * args) 
 {
   list_t * ret;
   IFNOTARGS2ERROR ("ERROR: Syntax error: cons : atom -> atom -> list" )

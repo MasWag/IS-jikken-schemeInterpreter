@@ -1,9 +1,9 @@
-/*!
+﻿/*!
   @file library.h
   @author Masaki Waga <tsugarutamenobu@gmail.com>
   @date 2013/10/13
   
-  @brief library縺�繧医����縺ゅ→
+  @brief libraryだよはあと
 */
 
 #ifndef LIBRARY_H
@@ -26,5 +26,6 @@ atom_t _le (list_t *);
 atom_t _leq (list_t *);
 atom_t _if (list_t *);
 atom_t _list (list_t *);
+atom_t _modulo (list_t *);
 
 #endif

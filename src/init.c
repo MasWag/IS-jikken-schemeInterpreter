@@ -1,4 +1,4 @@
-/*!
+﻿/*!
   @file init.c
   @author Masaki Waga <tsugarutamenobu@gmail.com>
   @date 2013/10/10
@@ -65,6 +65,13 @@ init (void)
   setData ("list", (atom_t)
 	   {
 	   .label = SYSTEM_FUNCTION,.systemFunction = _list});
+  setData ("modulo", (atom_t)
+	   {
+	   .label = SYSTEM_FUNCTION,.systemFunction = _modulo});
+  setData ("remainder", (atom_t)
+	   {
+	   .label = SYSTEM_FUNCTION,.systemFunction = _modulo});
+
 
   
 }
