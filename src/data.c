@@ -23,9 +23,9 @@ dataList_t * getGlobalDataListHead(void){return &listHead;}
 
 //! dataを格納しているlistから要素を取り出す
 atom_t 
-getData( char* label, dataList_t * in)
+getData( char* label,const dataList_t const * in)
 {
-  dataList_t *ptr = in;
+  const dataList_t *ptr = in;
   if (strcmp (ptr->car.label, label) == 0)
     return ptr->car.data;
   if (ptr->cdr != NULL)

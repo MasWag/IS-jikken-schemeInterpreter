@@ -58,19 +58,13 @@ reallocWithErr (void *ptr, size_t size)
   return tmp;
 }
 
-void * smartMalloc( size_t size )
+void * smartMalloc( const size_t size )
 {
 #define BUFF_MAX m_nowSmartPointerState->buffMax
 #define BUFF_NOW m_nowSmartPointerState->buffNow
 #define SMART_POINTER_HEAD m_nowSmartPointerState->smartPointerHead
 #define HEAD_NOW m_nowSmartPointerState->headNow
 #define HEAD_MAX m_nowSmartPointerState->headMax
-    /* if ( m_nowSmartPointerState->smartPointerHead == NULL ) */
-    /* 	m_nowSmartPointerState->smartPointerHead = malloc( 512 ); */
-    /* if ( m_nowSmartPointerState->buffMax - m_nowSmartPointerState->buffNow < size ) { */
-    /* 	m_nowSmartPointerState->buffMax += 512; */
-    /* 	m_nowSmartPointerState->smartPointerHead = realloc( m_nowSmartPointerState->smartPointerHead, m_nowSmartPointerState->buffMax ); */
-    /* } */
 
     const int headUnit = 512;
     if ( BUFF_MAX - BUFF_NOW < size || SMART_POINTER_HEAD == NULL) {
@@ -274,27 +268,44 @@ void freeList(list_t * src)
   free ( src );
 }
 
-void copyLambda(atom_t srcAtom,atom_t** destAtom ,dataList_t* dataList)
+void copyLambda(const atom_t srcAtom,atom_t** destAtom ,const dataList_t* const dataList)
 {
     atom_t *p_dest;
+    const list_t *p_list = srcAtom.pointerData;
     *destAtom = smartMalloc( sizeof( atom_t ) );
     p_dest = *destAtom;
     *p_dest = srcAtom;
     switch ( p_dest->label ) {
     case POINTER_OF_LIST:
     case LAMBDA:
-	if ( srcAtom.pointerData != NULL ) {
+	if ( p_list != NULL ) {
+	    list_t* p_destList;
 	    p_dest->pointerData = smartMalloc( sizeof(list_t) );
-	    atom_t * car = &(p_dest->pointerData->car);
-	    atom_t * cdr = &(p_dest->pointerData->cdr);
-	    copyLambda(srcAtom.pointerData->car,&car,dataList);
-	    p_dest->pointerData->car = *car;
-	    copyLambda(srcAtom.pointerData->cdr,&cdr,dataList);
-	    dest->pointerData->cdr = *cdr;
+	    p_destList = p_dest->pointerData;
+
+	    if ( p_list->car.label != POINTER_OF_LIST && p_list->car.label != LAMBDA && p_list->car.label != UNDEFINED_VARIABLE )
+		p_destList->car = p_list->car;
+	    else if ( p_list->car.label == UNDEFINED_VARIABLE)
+		p_destList->car = getData(p_list->car.variableName,dataList);
+	    else {
+		atom_t * car = &(p_destList->car);
+		copyLambda(p_list->car,&car,dataList);
+		p_destList->car = *car;
+	    }
+
+	    if ( p_list->cdr.label != POINTER_OF_LIST && p_list->cdr.label != LAMBDA && p_list->cdr.label != UNDEFINED_VARIABLE )
+		p_destList->cdr = p_list->cdr;
+	    else if ( p_list->cdr.label == UNDEFINED_VARIABLE)
+		p_destList->cdr = getData(p_list->cdr.variableName,dataList);
+	    else {
+		atom_t * cdr = &(p_destList->cdr);
+		copyLambda(p_list->cdr,&cdr,dataList);
+		p_destList->cdr = *cdr;
+	    }
 	}
 	break;
     case UNDEFINED_VARIABLE:
-	**destAtom = getData((*destAtom)->variableName,dataList);
+	*p_dest = getData(p_dest->variableName,dataList);
 	break;
     default:
 	break;
@@ -304,7 +315,8 @@ void copyLambda(atom_t srcAtom,atom_t** destAtom ,dataList_t* dataList)
 atom_t executeLambda(list_t* head,atom_t functionAtom,list_t * args,dataList_t* dataListHead)
 {
 //! freeするときはdataHeadからfunctionAtom.lambdaData.dataListの直前までをfreeする
-  smartPointerState m_smartPointerState;
+  smartPointerState m_smartPointerState = {.headMax = -1,.headNow = -1,.buffNow = 0,.buffMax = 1024};
+  m_smartPointerState.smartPointerHead = NULL;;
   dataList_t* dataHead;
   dataList_t* dataNow;
   dataList_t* dataHead_;
@@ -339,11 +351,6 @@ atom_t executeLambda(list_t* head,atom_t functionAtom,list_t * args,dataList_t* 
   if ( argsNow != NULL )
       return (atom_t){.label=FUNCTION,.lambdaData={.args=argsNow,.expression=functionAtom.lambdaData.expression,.dataList=dataHead}};
 
-  m_smartPointerState.headMax = -1;
-  m_smartPointerState.headNow = -1;
-  m_smartPointerState.buffNow = 0;
-  m_smartPointerState.buffMax = 512;
-  m_smartPointerState.smartPointerHead = NULL;
   m_nowSmartPointerState = &m_smartPointerState;
   // ここからlambda式のcopyと変数展開
   copyLambda((atom_t){.label=LAMBDA,.pointerData=functionAtom.lambdaData.expression}, &newFunctionAtom,dataHead);
@@ -354,7 +361,6 @@ atom_t executeLambda(list_t* head,atom_t functionAtom,list_t * args,dataList_t* 
   #endif
   atom_t ret = _execute (newFunctionAtom->pointerData,newFunctionAtom->pointerData->car,newFunctionAtom->pointerData->cdr.pointerData,dataListHead);
   freeDataList(dataHead,functionAtom.lambdaData.dataList);
-  /* freeList(newFunctionAtom->pointerData); */
   freeSmartPointerState ( m_smartPointerState );
   return ret;
 }
