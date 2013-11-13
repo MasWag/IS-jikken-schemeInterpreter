@@ -87,4 +87,11 @@ else
     echo "test 12 passed!!";
 fi
 
+if [ "$(echo '(list 2 4 1)' | ./scheme)" != '( 2 4 1 )' ]; then
+    echo "test 13 not passed!!";
+    exit -1;
+else
+    echo "test 13 passed!!";
+fi
+
 echo "all tests passed successfully!!"

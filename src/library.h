@@ -25,5 +25,6 @@ atom_t _gtq (list_t *);
 atom_t _le (list_t *);
 atom_t _leq (list_t *);
 atom_t _if (list_t *);
+atom_t _list (list_t *);
 
 #endif

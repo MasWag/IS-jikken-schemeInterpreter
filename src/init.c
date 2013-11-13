@@ -62,6 +62,9 @@ init (void)
   setData ("<=", (atom_t)
 	   {
 	   .label = SYSTEM_FUNCTION,.systemFunction = _leq});
+  setData ("list", (atom_t)
+	   {
+	   .label = SYSTEM_FUNCTION,.systemFunction = _list});
 
   
 }

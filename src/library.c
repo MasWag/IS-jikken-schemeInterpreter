@@ -20,6 +20,7 @@ static dataList_t* dataListHead;
 #define CHECKERROR(A) if ( (A).label == UNDEFINED_VARIABLE || (A).label == ERROR ) return (A)
 #define CHECKERROR1 CHECKERROR( ARG1 );
 #define CHECKERROR2 CHECKERROR( ARG1 ); CHECKERROR (ARG2);
+#define CHECKALLERROR(A) for( list_t* _t = (A);_t != NULL ; _t = _t->cdr.pointerData) if ( _t->car.label == UNDEFINED_VARIABLE ||  _t->car.label == ERROR ) return  _t->car
 #define ISNOTARGS1 args == NULL || args->cdr.pointerData != NULL
 #define ISNOTARGS2 args == NULL || args->cdr.pointerData == NULL || args->cdr.pointerData->cdr.pointerData != NULL
 #define RETERROR(A) return (atom_t){.label=ERROR,.stringData=(A)} 
@@ -195,7 +196,7 @@ _minus (list_t * args)
   .label = POINTER_OF_LIST,.pointerData = ret};
 }
 
- atom_t  _car (list_t * args) 
+atom_t  _car (list_t * args) 
 {
   IFNOTARGS1ERROR ("ERROR: Syntax error: car : list -> atom" )
   CHECKERROR1
@@ -254,7 +255,7 @@ atom_t  _quit (list_t * args)
   return (atom_t){.label=BOOL,.boolData=false};
 }
 
- atom_t  _gt (list_t * args) 
+atom_t  _gt (list_t * args) 
 {
   float arg1,arg2;
   IFNOTARGS2ERROR ("ERROR: Syntax error: > : atom -> atom -> bool")
@@ -405,6 +406,10 @@ atom_t  _if (list_t * args)
   return ARG2;
 }
 
-
-
-
+atom_t  _list (list_t * args)
+{
+  CHECKALLERROR(args);
+  return (atom_t) 
+  {
+  .label = POINTER_OF_LIST,.pointerData = args};
+}
